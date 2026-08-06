@@ -6,7 +6,7 @@ Goselaz Home Dashboard
 ## Phase 1 – Hardware, OS, and Kiosk
 
 ### Raspberry Pi prep
-- [ ] Flash Raspberry Pi OS (Lite or Desktop) to SD card.
+- [x] Flash Raspberry Pi OS (Lite or Desktop) to SD card.
 - [ ] Boot Pi, run `raspi-config`:
   - [ ] Set locale, keyboard, timezone.
   - [ ] Configure Wi‑Fi or Ethernet.
