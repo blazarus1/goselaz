@@ -1,221 +1,28 @@
-# Pi Household Dashboard
+# Pi Household Dashboard Checklist
 
-A customizable household dashboard that runs in Chromium kiosk mode on a Raspberry Pi 3B+.
+## Phase 0 – Planning
 
-## MVP Features
-
-- Current time and date
-- Weather for selected locations
-- Recent scores and upcoming games for favorite teams
-- Google Calendar day and week outlook
-- Countdowns
-- Birthdays
-- Household announcements
-
-## Future Features
-
-- Rotating personal photos
-- Grocery list
-- Voice-to-text grocery entry
-- Remote/mobile admin access
-- Automated backups
+- [ ] Confirm Raspberry Pi 3B+ hardware, power supply, monitor, keyboard, and network connection.
+- [ ] Decide primary display resolution.
+- [ ] Choose initial dashboard locations.
+- [ ] List preferred sports teams and leagues.
+- [ ] List Google Calendars to display.
+- [ ] Gather initial birthdays, countdowns, and household announcements.
+- [ ] Create Git repository for `pi-dashboard`.
 
 ---
 
-# Project Decisions and Reminders
+## Phase 1 – MacBook Development Setup
 
-## Raspberry Pi
-
-- Hardware: Raspberry Pi 3B+
-- Storage: 16 GB microSD card
-- Recommended OS: Raspberry Pi OS **64-bit with Desktop**
-- Browser/display: Chromium in kiosk mode
-- Server: Node.js + Express
-- Front end: Preact + Vite
-- Local database: SQLite
-
-## Why 64-bit Raspberry Pi OS
-
-The Raspberry Pi 3B+ has a 64-bit ARM CPU. Use Raspberry Pi OS 64-bit because it provides a better long-term Node.js package path.
-
-The prior 32-bit Raspberry Pi OS reports architecture `armhf`, which is no longer supported by the current NodeSource installation scripts. A 64-bit installation reports `arm64`, allowing a normal modern Node.js installation.
-
-After installing 64-bit Raspberry Pi OS, verify:
-
-```bash
-uname -m
-dpkg --print-architecture
-```
-
-Expected output:
-
-```text
-aarch64
-arm64
-```
-
-## SD Card Notes
-
-The current 16 GB microSD card is sufficient for the MVP.
-
-Avoid using the Pi SD card for:
-
-- Large photo libraries
-- Large local backups
-- Docker images
-- Multiple old builds
-- Unbounded logs
-
-Check free space periodically:
-
-```bash
-df -h /
-```
-
-Try to keep at least 2–3 GB free.
-
-Useful cleanup commands:
-
-```bash
-sudo apt autoremove -y
-sudo apt clean
-npm cache clean --force
-```
-
-Upgrade to a 32 GB A1/A2 or high-endurance card later if adding photos, large backups, or voice-processing models.
-
----
-
-# Architecture
-
-```text
-MacBook Development Environment
-  ├── VS Code
-  ├── Git repository
-  ├── Node.js
-  ├── Preact + Vite development server
-  ├── Express API server
-  ├── Mock API data
-  └── Local SQLite database
-
-Raspberry Pi Production Environment
-  ├── Raspberry Pi OS 64-bit Desktop
-  ├── Node.js + Express server
-  ├── SQLite database
-  ├── Chromium kiosk mode
-  ├── systemd services
-  └── Dashboard at http://localhost:3000
-```
-
-## Development Workflow
-
-1. Build and test features locally on the MacBook in VS Code.
-2. Use mock API responses while building the Preact UI.
-3. Commit working changes to Git.
-4. Deploy the project to the Raspberry Pi.
-5. Build the production Preact bundle on the Pi or deploy the built assets.
-6. Test Chromium kiosk behavior, boot behavior, and screen readability on the Pi.
-
-Local MacBook development is not strictly required, but it is strongly recommended because development, debugging, browser inspection, and Git work are much faster than working directly on the Pi.
-
----
-
-# Project Structure
-
-```text
-pi-dashboard/
-├── README.md
-├── .gitignore
-├── .env.example
-│
-├── client/
-│   ├── package.json
-│   ├── vite.config.js
-│   ├── index.html
-│   ├── src/
-│   │   ├── main.jsx
-│   │   ├── App.jsx
-│   │   ├── api/
-│   │   │   ├── client.js
-│   │   │   ├── weather.js
-│   │   │   ├── sports.js
-│   │   │   ├── calendar.js
-│   │   │   └── household.js
-│   │   ├── components/
-│   │   │   ├── ClockCard.jsx
-│   │   │   ├── WeatherCard.jsx
-│   │   │   ├── SportsCard.jsx
-│   │   │   ├── CalendarCard.jsx
-│   │   │   ├── CountdownCard.jsx
-│   │   │   ├── BirthdaysCard.jsx
-│   │   │   └── AnnouncementsCard.jsx
-│   │   ├── pages/
-│   │   │   ├── Dashboard.jsx
-│   │   │   └── Admin.jsx
-│   │   └── styles/
-│   │       ├── global.css
-│   │       └── theme.css
-│   └── dist/
-│
-├── server/
-│   ├── package.json
-│   ├── public/
-│   └── src/
-│       ├── index.js
-│       ├── routes/
-│       ├── services/
-│       ├── jobs/
-│       ├── db/
-│       │   ├── schema.sql
-│       │   └── migrations/
-│       └── lib/
-│
-├── data/
-│   ├── dashboard.db
-│   ├── backups/
-│   └── photos/
-│
-└── scripts/
-    ├── deploy-to-pi.sh
-    └── backup-db.sh
-```
-
----
-
-# Environment Variables
-
-Create `.env.example`:
-
-```env
-PORT=3000
-TZ=America/New_York
-
-OPENWEATHER_API_KEY=
-
-SPORTS_PROVIDER=thesportsdb
-THESPORTSDB_API_KEY=
-
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GOOGLE_REDIRECT_URI=http://localhost:3000/auth/google/callback
-
-ADMIN_PASSWORD_HASH=
-```
-
-Create separate `.env` files on the MacBook and Raspberry Pi.
-
-Do not commit `.env` files to Git.
-
----
-
-# Phase 0 – Local MacBook and VS Code Development
-
-## Local development setup
-
-- [ ] Install Visual Studio Code on the MacBook.
+- [ ] Install Visual Studio Code.
 - [ ] Install Git.
 - [ ] Install Node.js LTS.
-- [ ] Confirm the local tools work:
+- [ ] Open/create the project folder in VS Code.
+- [ ] Initialize Git repository.
+- [ ] Create `.gitignore`.
+- [ ] Create `.env.example`.
+- [ ] Create `client/`, `server/`, `data/`, and `scripts/` folders.
+- [ ] Confirm local Node and npm versions:
 
 ```bash
 node --version
@@ -223,201 +30,244 @@ npm --version
 git --version
 ```
 
-- [ ] Create a local project folder:
-
-```bash
-mkdir -p ~/Projects/pi-dashboard
-cd ~/Projects/pi-dashboard
-git init
-```
-
-- [ ] Add `.gitignore` entries for:
-
-```gitignore
-node_modules/
-.env
-*.log
-data/*.db
-client/dist/
-.DS_Store
-```
-
-- [ ] Open the project in VS Code:
-
-```bash
-code .
-```
-
-- [ ] Use the VS Code integrated terminal for project commands.
-
-## Preact client setup
-
-- [ ] Create a Preact + Vite application:
-
-```bash
-npm create vite@latest client -- --template preact
-cd client
-npm install
-npm run dev
-```
-
-- [ ] Confirm the Preact application loads locally.
-- [ ] Create initial components:
-  - [ ] `ClockCard`
-  - [ ] `WeatherCard`
-  - [ ] `SportsCard`
-  - [ ] `CalendarCard`
-  - [ ] `CountdownCard`
-  - [ ] `BirthdaysCard`
-  - [ ] `AnnouncementsCard`
-
-## Local Node server setup
-
-- [ ] Create `server/` folder.
-- [ ] Initialize Node.js project:
-
-```bash
-cd ../
-mkdir server
-cd server
-npm init -y
-```
-
-- [ ] Install server dependencies:
-
-```bash
-npm install express
-npm install --save-dev nodemon
-```
-
-- [ ] Add a development script to `server/package.json`.
-- [ ] Implement `GET /health` returning:
-
-```json
-{
-  "status": "ok"
-}
-```
-
-- [ ] Add logging middleware.
-- [ ] Add error-handling middleware.
-- [ ] Confirm local server runs at:
-
-```text
-http://localhost:3000/health
-```
-
-## Local client/server integration
-
-- [ ] Configure Vite proxy in `client/vite.config.js`:
-
-```js
-import { defineConfig } from 'vite';
-import preact from '@preact/preset-vite';
-
-export default defineConfig({
-  plugins: [preact()],
-  server: {
-    proxy: {
-      '/api': 'http://localhost:3000'
-    }
-  }
-});
-```
-
-- [ ] Create mock API payloads for:
-  - [ ] Weather
-  - [ ] Sports
-  - [ ] Calendar
-  - [ ] Countdowns
-  - [ ] Birthdays
-  - [ ] Announcements
-- [ ] Build the dashboard UI against mock data first.
-- [ ] Test UI in a MacBook browser before deploying to Pi.
-- [ ] Test at dashboard-like screen sizes, especially 1920×1080.
-- [ ] Build production assets:
-
-```bash
-cd client
-npm run build
-```
+- [ ] Create Preact + Vite client.
+- [ ] Create Node.js + Express server.
+- [ ] Add a `GET /health` endpoint.
+- [ ] Confirm client and server run locally.
+- [ ] Configure Vite proxy from `/api` to local Node server.
+- [ ] Create mock API responses for early UI development.
 
 ---
 
-# Phase 1 – Hardware, OS, and Kiosk
+## Phase 2 – Raspberry Pi Setup
 
-## Raspberry Pi prep
+- [ ] Back up anything needed from current microSD card.
+- [ ] Flash Raspberry Pi OS 64-bit Desktop to microSD card.
+- [ ] Configure Wi-Fi, SSH, locale, timezone, hostname, and username in Raspberry Pi Imager.
+- [ ] Boot Raspberry Pi.
+- [ ] Update packages:
 
-- [ ] Back up any files needed from the existing SD card.
-- [ ] Flash Raspberry Pi OS **64-bit Desktop** to the 16 GB microSD card.
-- [ ] Use Raspberry Pi Imager advanced settings to set:
-  - [ ] Hostname
-  - [ ] Username and password
-  - [ ] Wi-Fi credentials
-  - [ ] Locale
-  - [ ] Keyboard layout
-  - [ ] Timezone
-  - [ ] SSH enabled
-- [ ] Boot the Pi.
-- [ ] Verify hostname and local network connectivity.
-- [ ] Verify 64-bit architecture:
+```bash
+sudo apt update
+sudo apt full-upgrade -y
+```
+
+- [ ] Verify Pi is using 64-bit OS:
 
 ```bash
 uname -m
 dpkg --print-architecture
 ```
 
-## Baseline software
+- [ ] Confirm expected results:
 
-- [ ] Update system packages:
-
-```bash
-sudo apt update
-sudo apt full-upgrade -y
-sudo reboot
+```text
+aarch64
+arm64
 ```
 
-- [ ] Install Chromium:
-
-```bash
-sudo apt install -y chromium-browser
-```
-
-- [ ] Install Git:
-
-```bash
-sudo apt install -y git
-```
-
+- [ ] Install Chromium.
+- [ ] Install Git.
 - [ ] Install Node.js LTS.
-- [ ] Install build dependencies for native npm packages:
+- [ ] Install build tools:
 
 ```bash
 sudo apt install -y build-essential python3 make g++
 ```
 
-- [ ] Verify Node.js:
+- [ ] Confirm Node and npm installation.
+- [ ] Confirm SSH access from MacBook to Raspberry Pi.
+- [ ] Check available storage:
 
 ```bash
-node --version
-npm --version
+df -h /
 ```
 
-## Kiosk mode
+- [ ] Preserve at least 2–3 GB free on the 16 GB microSD card.
 
-- [ ] Create a startup script to launch Chromium.
-- [ ] Configure Chromium to open:
+---
+
+## Phase 3 – Preact Dashboard Shell
+
+- [ ] Create main dashboard layout.
+- [ ] Create app-level theme and global CSS.
+- [ ] Add readable large typography for wall-display viewing.
+- [ ] Add dashboard card layout.
+- [ ] Create placeholder components:
+  - [ ] ClockCard
+  - [ ] WeatherCard
+  - [ ] SportsCard
+  - [ ] CalendarCard
+  - [ ] CountdownCard
+  - [ ] BirthdaysCard
+  - [ ] AnnouncementsCard
+- [ ] Test dashboard layout locally at monitor/TV resolution.
+- [ ] Keep animations minimal for Pi 3B+ performance.
+- [ ] Add loading, empty, and error states for every card.
+
+---
+
+## Phase 4 – Local Data and SQLite
+
+- [ ] Install SQLite dependencies.
+- [ ] Create database initialization script.
+- [ ] Create database schema.
+- [ ] Add tables:
+  - [ ] `locations`
+  - [ ] `favorite_teams`
+  - [ ] `countdowns`
+  - [ ] `birthdays`
+  - [ ] `announcements`
+  - [ ] `cached_responses`
+- [ ] Seed initial local data.
+- [ ] Implement local API endpoints:
+  - [ ] `GET /api/countdowns`
+  - [ ] `GET /api/birthdays`
+  - [ ] `GET /api/announcements`
+- [ ] Connect local API endpoints to Preact cards.
+- [ ] Add “last updated” timestamp where useful.
+
+---
+
+## Phase 5 – Weather
+
+- [ ] Select weather API provider.
+- [ ] Create weather API account.
+- [ ] Add API key to `.env`.
+- [ ] Add preferred locations with latitude and longitude.
+- [ ] Create server-side weather service.
+- [ ] Implement weather response cache.
+- [ ] Set weather cache expiration to approximately 15 minutes.
+- [ ] Implement `GET /api/weather`.
+- [ ] Connect WeatherCard to API.
+- [ ] Display location, temperature, condition, icon, and updated time.
+- [ ] Test weather fallback behavior when API is unavailable.
+
+---
+
+## Phase 6 – Sports
+
+- [ ] Select sports data provider.
+- [ ] Add sports API credentials to `.env`, if required.
+- [ ] Add favorite teams to database.
+- [ ] Store external team IDs for each favorite team.
+- [ ] Create sports service.
+- [ ] Retrieve most recent completed game.
+- [ ] Retrieve next scheduled game.
+- [ ] Normalize sports data into dashboard-friendly format.
+- [ ] Cache sports results.
+- [ ] Implement `GET /api/sports`.
+- [ ] Connect SportsCard to API.
+- [ ] Handle off-season and no-upcoming-game states.
+
+---
+
+## Phase 7 – Google Calendar
+
+- [ ] Create Google Cloud project.
+- [ ] Enable Google Calendar API.
+- [ ] Configure OAuth consent screen.
+- [ ] Create OAuth client credentials.
+- [ ] Add local MacBook callback URL.
+- [ ] Add Raspberry Pi production callback URL.
+- [ ] Add Google credentials to `.env`.
+- [ ] Implement Google OAuth authorization flow.
+- [ ] Store refresh token securely.
+- [ ] Implement token refresh behavior.
+- [ ] Build calendar service.
+- [ ] Retrieve today’s events.
+- [ ] Retrieve current week’s events.
+- [ ] Implement:
+  - [ ] `GET /api/calendar?view=day`
+  - [ ] `GET /api/calendar?view=week`
+- [ ] Connect CalendarCard to API.
+- [ ] Display event times, titles, and locations.
+- [ ] Handle no-events state.
+
+---
+
+## Phase 8 – Admin Page
+
+- [ ] Create admin page route.
+- [ ] Add simple local-network authentication.
+- [ ] Create CRUD interface for countdowns.
+- [ ] Create CRUD interface for birthdays.
+- [ ] Create CRUD interface for announcements.
+- [ ] Create CRUD interface for weather locations.
+- [ ] Create CRUD interface for favorite teams.
+- [ ] Add input validation.
+- [ ] Add friendly error messages.
+- [ ] Test edits from MacBook browser.
+- [ ] Confirm dashboard refreshes after admin changes.
+
+---
+
+## Phase 9 – Deploy to Pi
+
+- [ ] Clone repository onto Raspberry Pi.
+- [ ] Create production `.env` file on Pi.
+- [ ] Install server dependencies.
+- [ ] Install client dependencies.
+- [ ] Build Preact production files:
+
+```bash
+cd client
+npm run build
+```
+
+- [ ] Configure server to serve built Preact files.
+- [ ] Confirm dashboard works at:
 
 ```text
 http://localhost:3000
 ```
 
-- [ ] Use kiosk/fullscreen flags such as:
+- [ ] Test dashboard from another device on local network.
+- [ ] Confirm all API integrations work on Pi.
 
-```bash
-chromium-browser --kiosk --noerrdialogs --disable-infobars http://localhost:3000
-```
+---
 
-- [ ] Create a `systemd` unit or desktop autostart entry for kiosk mode.
-- [ ] Test reboot behavior.
-- [ ] Confirm Chromium
+## Phase 10 – Kiosk Mode and Reliability
+
+- [ ] Configure Chromium to open dashboard URL in kiosk mode.
+- [ ] Create Node dashboard `systemd` service.
+- [ ] Configure service to restart on failure.
+- [ ] Configure Chromium kiosk startup service.
+- [ ] Ensure kiosk starts after network and Node server are available.
+- [ ] Reboot Pi and confirm dashboard auto-launches.
+- [ ] Test Node server restart.
+- [ ] Test Chromium restart.
+- [ ] Test network loss and recovery.
+- [ ] Configure log rotation.
+- [ ] Document service restart commands.
+- [ ] Create database backup process.
+
+---
+
+## Phase 11 – MVP Validation
+
+- [ ] Clock and date are accurate.
+- [ ] Weather displays for all configured locations.
+- [ ] Sports scores and next games display for favorite teams.
+- [ ] Google Calendar day view displays.
+- [ ] Google Calendar week view displays.
+- [ ] Countdowns display correctly.
+- [ ] Upcoming birthdays display correctly.
+- [ ] Announcements display correctly.
+- [ ] Dashboard handles external API failures gracefully.
+- [ ] Dashboard restarts successfully after Pi reboot.
+- [ ] Dashboard remains usable and readable at intended monitor distance.
+
+---
+
+## Future Enhancements
+
+- [ ] Add rotating local photo slideshow.
+- [ ] Add photo upload/enable controls to admin page.
+- [ ] Add manual grocery-list module.
+- [ ] Add mobile-friendly grocery-list access.
+- [ ] Add grocery categories.
+- [ ] Add press-to-talk grocery entry.
+- [ ] Evaluate cloud or local speech-to-text options.
+- [ ] Add USB/NAS storage for photos and backups.
+- [ ] Upgrade microSD card to 32 GB or larger if storage becomes constrained.
