@@ -1,103 +1,197 @@
-import { useEffect, useState } from 'preact/hooks';
+import ClockCard from './components/ClockCard';
+import WeatherCard from './components/WeatherCard';
+import SportsCard from './components/SportsCard';
+import CalendarCard from './components/CalendarCard';
+import CountdownCard from './components/CountdownCard';
+import BirthdaysCard from './components/BirthdaysCard';
+import AnnouncementsCard from './components/AnnouncementsCard';
 import './app.css';
 
-function App() {
-  const [weather, setWeather] = useState(null);
-  const [apiStatus, setApiStatus] = useState('Checking API...');
-  const [error, setError] = useState(null);
+const searchParams = new URLSearchParams(window.location.search);
+const requestedState = searchParams.get('state');
 
-  useEffect(() => {
-    async function loadDashboard() {
-      try {
-        const healthResponse = await fetch('/health');
+const validStates = ['ready', 'loading', 'empty', 'error'];
+const demoState = validStates.includes(requestedState)
+  ? requestedState
+  : 'ready';
 
-        if (!healthResponse.ok) {
-          throw new Error('API health check failed');
-        }
+const mockWeather = {
+  updatedAt: 'a few moments ago',
+  locations: [
+    {
+      id: 1,
+      name: 'Knoxville, TN',
+      temperature: 82,
+      high: 87,
+      low: 68,
+      condition: 'Partly cloudy'
+    },
+    {
+      id: 2,
+      name: 'Destin, FL',
+      temperature: 86,
+      high: 89,
+      low: 76,
+      condition: 'Sunny'
+    }
+  ]
+};
 
-        const health = await healthResponse.json();
-        setApiStatus(`API: ${health.status}`);
-
-        const weatherResponse = await fetch('/api/weather');
-
-        if (!weatherResponse.ok) {
-          throw new Error('Weather request failed');
-        }
-
-        const weatherData = await weatherResponse.json();
-        setWeather(weatherData);
-      } catch (err) {
-        setError(err.message);
-        setApiStatus('API unavailable');
+const mockSports = {
+  updatedAt: 'a few moments ago',
+  teams: [
+    {
+      id: 1,
+      team: 'Tennessee Volunteers',
+      league: 'NCAA Football',
+      lastGame: {
+        opponent: 'Example Opponent',
+        score: '31–17',
+        result: 'W'
+      },
+      nextGame: {
+        opponent: 'Example University',
+        date: 'Sat · 7:30 PM'
       }
     }
+  ]
+};
 
-    loadDashboard();
-  }, []);
+const mockCalendar = {
+  updatedAt: 'a few moments ago',
+  events: [
+    {
+      id: 1,
+      time: '7:00 AM',
+      title: 'Morning workout',
+      location: 'Home'
+    },
+    {
+      id: 2,
+      time: '12:00 PM',
+      title: 'Lunch meeting',
+      location: 'Downtown'
+    },
+    {
+      id: 3,
+      time: '6:30 PM',
+      title: 'Dinner with friends',
+      location: 'Downtown'
+    }
+  ]
+};
+
+const mockCountdowns = {
+  countdowns: [
+    {
+      id: 1,
+      title: 'Beach trip',
+      date: 'September 1',
+      daysUntil: 23
+    },
+    {
+      id: 2,
+      title: 'Thanksgiving',
+      date: 'November 26',
+      daysUntil: 109
+    }
+  ]
+};
+
+const mockBirthdays = {
+  birthdays: [
+    {
+      id: 1,
+      name: 'Maddie',
+      date: 'August 18',
+      daysUntil: 8
+    },
+    {
+      id: 2,
+      name: 'Mom',
+      date: 'September 4',
+      daysUntil: 25
+    }
+  ]
+};
+
+const mockAnnouncements = {
+  announcements: [
+    {
+      id: 1,
+      title: 'Trash night',
+      body: 'Put bins out Sunday evening.',
+      priority: 'normal'
+    },
+    {
+      id: 2,
+      title: 'Grocery reminder',
+      body: 'Add meal-prep ingredients before the next store run.',
+      priority: 'high'
+    }
+  ]
+};
+
+function App() {
+  const emptyData = {
+    locations: [],
+    teams: [],
+    events: [],
+    countdowns: [],
+    birthdays: [],
+    announcements: []
+  };
+
+  const isEmpty = demoState === 'empty';
 
   return (
-    <main class="dashboard">
-      <header class="dashboard__header">
+    <main class="dashboard-page">
+      <header class="dashboard-topbar">
         <div>
-          <p class="eyebrow">Pi Household Dashboard</p>
-          <h1>Good afternoon</h1>
+          <p class="dashboard-eyebrow">Goselaz home</p>
+          <h1>Dashboard</h1>
         </div>
 
-        <p class={`api-status ${error ? 'api-status--error' : ''}`}>
-          {apiStatus}
-        </p>
+        <div class="dashboard-topbar__right">
+          <span class={`demo-badge demo-badge--${demoState}`}>
+            Demo: {demoState}
+          </span>
+          <p>Data refreshes automatically once APIs are connected.</p>
+        </div>
       </header>
 
-      <section class="dashboard__grid">
-        <article class="card card--clock">
-          <p class="card__label">Local time</p>
-          <p class="clock">{new Date().toLocaleTimeString([], {
-            hour: 'numeric',
-            minute: '2-digit'
-          })}</p>
-          <p class="date">
-            {new Date().toLocaleDateString([], {
-              weekday: 'long',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </p>
-        </article>
+      <section class="dashboard-grid" aria-label="Household dashboard">
+        <ClockCard status={demoState} />
 
-        <article class="card">
-          <p class="card__label">Weather</p>
+        <WeatherCard
+          status={demoState}
+          data={isEmpty ? emptyData : mockWeather}
+        />
 
-          {!weather && !error && <p>Loading weather…</p>}
+        <CalendarCard
+          status={demoState}
+          data={isEmpty ? emptyData : mockCalendar}
+        />
 
-          {error && (
-            <p class="error-message">
-              Could not load mock weather data: {error}
-            </p>
-          )}
+        <SportsCard
+          status={demoState}
+          data={isEmpty ? emptyData : mockSports}
+        />
 
-          {weather?.locations.map((location) => (
-            <div class="weather-row" key={location.id}>
-              <div>
-                <h2>{location.name}</h2>
-                <p>{location.condition}</p>
-              </div>
+        <CountdownCard
+          status={demoState}
+          data={isEmpty ? emptyData : mockCountdowns}
+        />
 
-              <p class="temperature">{location.temperature}°</p>
-            </div>
-          ))}
-        </article>
+        <BirthdaysCard
+          status={demoState}
+          data={isEmpty ? emptyData : mockBirthdays}
+        />
 
-        <article class="card">
-          <p class="card__label">Sports</p>
-          <h2>Mock endpoint ready</h2>
-          <p>Next: connect this card to `/api/sports`.</p>
-        </article>
-
-        <article class="card">
-          <p class="card__label">Calendar</p>
-          <h2>Mock endpoint ready</h2>
-          <p>Next: connect this card to `/api/calendar?view=day`.</p>
-        </article>
+        <AnnouncementsCard
+          status={demoState}
+          data={isEmpty ? emptyData : mockAnnouncements}
+        />
       </section>
     </main>
   );
