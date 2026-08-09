@@ -1,6 +1,14 @@
+const path = require('node:path');
 const express = require('express');
+const dotenv = require('dotenv');
+
+dotenv.config({
+  path: path.resolve(__dirname, '../../.env')
+});
+
 const { initializeDatabase } = require('./db/init');
 const localDataRouter = require('./routes/localData');
+const weatherRouter = require('./routes/weather');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -18,6 +26,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/api', localDataRouter);
+app.use('/api', weatherRouter);
 
 app.use((req, res) => {
   res.status(404).json({

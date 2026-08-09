@@ -30,6 +30,10 @@ function App() {
   const [localStatus, setLocalStatus] = useState('loading');
   const [localError, setLocalError] = useState(null);
 
+  const [weatherData, setWeatherData] = useState(null);
+  const [weatherStatus, setWeatherStatus] = useState('loading');
+  const [weatherError, setWeatherError] = useState(null);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -62,6 +66,7 @@ function App() {
       }
     }
 
+
     loadLocalData();
 
     return () => {
@@ -69,6 +74,47 @@ function App() {
     };
   }, []);
 
+useEffect(() => {
+  let isMounted = true;
+
+  async function loadWeather() {
+    try {
+      const response = await fetch('/api/weather');
+
+      if (!response.ok) {
+        throw new Error(`Weather request failed: ${response.status}`);
+      }
+
+      const weather = await response.json();
+
+      if (isMounted) {
+        setWeatherData(weather);
+        setWeatherStatus('ready');
+        setWeatherError(null);
+      }
+    } catch (error) {
+      console.error('Weather failed to load:', error);
+
+      if (isMounted) {
+        setWeatherStatus('error');
+        setWeatherError(error.message);
+      }
+    }
+  }
+
+  loadWeather();
+
+  const refreshTimer = window.setInterval(
+    loadWeather,
+    5 * 60 * 1000
+  );
+
+  return () => {
+    isMounted = false;
+    window.clearInterval(refreshTimer);
+  };
+}, []);
+  
   return (
     <main class="dashboard-page">
       <header class="dashboard-topbar">
@@ -88,7 +134,11 @@ function App() {
       <section class="dashboard-grid" aria-label="Household dashboard">
         <ClockCard />
 
-        <WeatherCard status="loading" data={null} />
+        <WeatherCard
+          status={weatherStatus}
+          data={weatherData}
+          error={weatherError}
+        />
 
         <CalendarCard status="loading" data={null} />
 

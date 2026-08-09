@@ -71,10 +71,10 @@ function initializeDatabase() {
     );
 
     seedLocations.run(
-      'Destin, FL',
-      30.3935,
-      -86.4958,
-      'America/Chicago',
+      'Carmel-By-The-Sea, CA',
+      36.5552,
+      -121.9233,
+      ' America/Los_Angeles',
       2
     );
 

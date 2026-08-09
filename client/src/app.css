@@ -424,3 +424,41 @@
     grid-column: 1 / -1;
   }
 }
+
+.weather-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.weather-location {
+  min-width: 0;
+}
+
+.weather-symbol {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--color-primary);
+  background: var(--color-primary-soft);
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.weather-symbol--muted {
+  color: var(--color-muted);
+  background: var(--color-surface-soft);
+}
+
+.weather-row--unavailable {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.weather-row--unavailable .weather-symbol {
+  grid-column: 2;
+  grid-row: 1;
+}
