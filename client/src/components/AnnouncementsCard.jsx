@@ -10,6 +10,7 @@ function AnnouncementsCard({ data, status = 'ready' }) {
       status={status}
       isEmpty={status === 'ready' && announcements.length === 0}
       error="Announcements could not be loaded."
+      footer={data?.updatedAt ? `Last updated ${data.updatedAt}` : null}
     >
       <div class="announcement-list">
         {announcements.map((announcement) => (

@@ -10,6 +10,7 @@ function BirthdaysCard({ data, status = 'ready' }) {
       status={status}
       isEmpty={status === 'ready' && birthdays.length === 0}
       error="Birthday data could not be loaded."
+      footer={data?.updatedAt ? `Last updated ${data.updatedAt}` : null}
     >
       <div class="birthday-list">
         {birthdays.map((birthday) => (

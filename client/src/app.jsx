@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'preact/hooks';
+
 import ClockCard from './components/ClockCard';
 import WeatherCard from './components/WeatherCard';
 import SportsCard from './components/SportsCard';
@@ -5,144 +7,67 @@ import CalendarCard from './components/CalendarCard';
 import CountdownCard from './components/CountdownCard';
 import BirthdaysCard from './components/BirthdaysCard';
 import AnnouncementsCard from './components/AnnouncementsCard';
+
 import './app.css';
 
-const searchParams = new URLSearchParams(window.location.search);
-const requestedState = searchParams.get('state');
+async function fetchJson(url) {
+  const response = await fetch(url);
 
-const validStates = ['ready', 'loading', 'empty', 'error'];
-const demoState = validStates.includes(requestedState)
-  ? requestedState
-  : 'ready';
+  if (!response.ok) {
+    throw new Error(`Request failed: ${response.status}`);
+  }
 
-const mockWeather = {
-  updatedAt: 'a few moments ago',
-  locations: [
-    {
-      id: 1,
-      name: 'Knoxville, TN',
-      temperature: 82,
-      high: 87,
-      low: 68,
-      condition: 'Partly cloudy'
-    },
-    {
-      id: 2,
-      name: 'Destin, FL',
-      temperature: 86,
-      high: 89,
-      low: 76,
-      condition: 'Sunny'
-    }
-  ]
-};
-
-const mockSports = {
-  updatedAt: 'a few moments ago',
-  teams: [
-    {
-      id: 1,
-      team: 'Tennessee Volunteers',
-      league: 'NCAA Football',
-      lastGame: {
-        opponent: 'Example Opponent',
-        score: '31–17',
-        result: 'W'
-      },
-      nextGame: {
-        opponent: 'Example University',
-        date: 'Sat · 7:30 PM'
-      }
-    }
-  ]
-};
-
-const mockCalendar = {
-  updatedAt: 'a few moments ago',
-  events: [
-    {
-      id: 1,
-      time: '7:00 AM',
-      title: 'Morning workout',
-      location: 'Home'
-    },
-    {
-      id: 2,
-      time: '12:00 PM',
-      title: 'Lunch meeting',
-      location: 'Downtown'
-    },
-    {
-      id: 3,
-      time: '6:30 PM',
-      title: 'Dinner with friends',
-      location: 'Downtown'
-    }
-  ]
-};
-
-const mockCountdowns = {
-  countdowns: [
-    {
-      id: 1,
-      title: 'Beach trip',
-      date: 'September 1',
-      daysUntil: 23
-    },
-    {
-      id: 2,
-      title: 'Thanksgiving',
-      date: 'November 26',
-      daysUntil: 109
-    }
-  ]
-};
-
-const mockBirthdays = {
-  birthdays: [
-    {
-      id: 1,
-      name: 'Maddie',
-      date: 'August 18',
-      daysUntil: 8
-    },
-    {
-      id: 2,
-      name: 'Mom',
-      date: 'September 4',
-      daysUntil: 25
-    }
-  ]
-};
-
-const mockAnnouncements = {
-  announcements: [
-    {
-      id: 1,
-      title: 'Trash night',
-      body: 'Put bins out Sunday evening.',
-      priority: 'normal'
-    },
-    {
-      id: 2,
-      title: 'Grocery reminder',
-      body: 'Add meal-prep ingredients before the next store run.',
-      priority: 'high'
-    }
-  ]
-};
+  return response.json();
+}
 
 function App() {
-  const emptyData = {
-    locations: [],
-    teams: [],
-    events: [],
-    countdowns: [],
-    birthdays: [],
-    announcements: []
-  };
+  const [localData, setLocalData] = useState({
+    countdowns: null,
+    birthdays: null,
+    announcements: null
+  });
 
-  const isEmpty = demoState === 'empty';
+  const [localStatus, setLocalStatus] = useState('loading');
+  const [localError, setLocalError] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadLocalData() {
+      try {
+        const [countdowns, birthdays, announcements] = await Promise.all([
+          fetchJson('/api/countdowns'),
+          fetchJson('/api/birthdays'),
+          fetchJson('/api/announcements')
+        ]);
+
+        if (!isMounted) {
+          return;
+        }
+
+        setLocalData({
+          countdowns,
+          birthdays,
+          announcements
+        });
+
+        setLocalStatus('ready');
+      } catch (error) {
+        console.error('Local dashboard data failed to load:', error);
+
+        if (isMounted) {
+          setLocalError(error.message);
+          setLocalStatus('error');
+        }
+      }
+    }
+
+    loadLocalData();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <main class="dashboard-page">
@@ -153,44 +78,38 @@ function App() {
         </div>
 
         <div class="dashboard-topbar__right">
-          <span class={`demo-badge demo-badge--${demoState}`}>
-            Demo: {demoState}
+          <span class={`demo-badge demo-badge--${localStatus}`}>
+            Local data: {localStatus}
           </span>
-          <p>Data refreshes automatically once APIs are connected.</p>
+          <p>Countdowns, birthdays, and announcements use SQLite.</p>
         </div>
       </header>
 
       <section class="dashboard-grid" aria-label="Household dashboard">
-        <ClockCard status={demoState} />
+        <ClockCard />
 
-        <WeatherCard
-          status={demoState}
-          data={isEmpty ? emptyData : mockWeather}
-        />
+        <WeatherCard status="loading" data={null} />
 
-        <CalendarCard
-          status={demoState}
-          data={isEmpty ? emptyData : mockCalendar}
-        />
+        <CalendarCard status="loading" data={null} />
 
-        <SportsCard
-          status={demoState}
-          data={isEmpty ? emptyData : mockSports}
-        />
+        <SportsCard status="loading" data={null} />
 
         <CountdownCard
-          status={demoState}
-          data={isEmpty ? emptyData : mockCountdowns}
+          status={localStatus}
+          data={localData.countdowns}
+          error={localError}
         />
 
         <BirthdaysCard
-          status={demoState}
-          data={isEmpty ? emptyData : mockBirthdays}
+          status={localStatus}
+          data={localData.birthdays}
+          error={localError}
         />
 
         <AnnouncementsCard
-          status={demoState}
-          data={isEmpty ? emptyData : mockAnnouncements}
+          status={localStatus}
+          data={localData.announcements}
+          error={localError}
         />
       </section>
     </main>
