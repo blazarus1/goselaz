@@ -14,15 +14,15 @@
 
 ## Phase 1 – MacBook Development Setup
 
-- [ ] Install Visual Studio Code.
-- [ ] Install Git.
-- [ ] Install Node.js LTS.
-- [ ] Open/create the project folder in VS Code.
-- [ ] Initialize Git repository.
-- [ ] Create `.gitignore`.
-- [ ] Create `.env.example`.
-- [ ] Create `client/`, `server/`, `data/`, and `scripts/` folders.
-- [ ] Confirm local Node and npm versions:
+- [x] Install Visual Studio Code.
+- [x] Install Git.
+- [x] Install Node.js LTS.
+- [x] Open/create the project folder in VS Code.
+- [x] Initialize Git repository.
+- [x] Create `.gitignore`.
+- [x] Create `.env.example`.
+- [x] Create `client/`, `server/`, `data/`, and `scripts/` folders.
+- [x] Confirm local Node and npm versions:
 
 ```bash
 node --version
@@ -30,22 +30,22 @@ npm --version
 git --version
 ```
 
-- [ ] Create Preact + Vite client.
-- [ ] Create Node.js + Express server.
-- [ ] Add a `GET /health` endpoint.
-- [ ] Confirm client and server run locally.
-- [ ] Configure Vite proxy from `/api` to local Node server.
-- [ ] Create mock API responses for early UI development.
+- [x] Create Preact + Vite client.
+- [x] Create Node.js + Express server.
+- [x] Add a `GET /health` endpoint.
+- [x] Confirm client and server run locally.
+- [x] Configure Vite proxy from `/api` to local Node server.
+- [x] Create mock API responses for early UI development.
 
 ---
 
 ## Phase 2 – Raspberry Pi Setup
 
-- [ ] Back up anything needed from current microSD card.
-- [ ] Flash Raspberry Pi OS 64-bit Desktop to microSD card.
-- [ ] Configure Wi-Fi, SSH, locale, timezone, hostname, and username in Raspberry Pi Imager.
-- [ ] Boot Raspberry Pi.
-- [ ] Update packages:
+- [x] Back up anything needed from current microSD card.
+- [x] Flash Raspberry Pi OS 64-bit Desktop to microSD card.
+- [x] Configure Wi-Fi, SSH, locale, timezone, hostname, and username in Raspberry Pi Imager.
+- [x] Boot Raspberry Pi.
+- [x] Update packages:
 
 ```bash
 sudo apt update
@@ -66,24 +66,25 @@ aarch64
 arm64
 ```
 
-- [ ] Install Chromium.
-- [ ] Install Git.
-- [ ] Install Node.js LTS.
-- [ ] Install build tools:
+- [x] Install Chromium.
+- [x] Install Git.
+- [x] Install Node.js LTS.
+- [x] Install build tools:
 
 ```bash
 sudo apt install -y build-essential python3 make g++
 ```
 
-- [ ] Confirm Node and npm installation.
-- [ ] Confirm SSH access from MacBook to Raspberry Pi.
-- [ ] Check available storage:
+- [x] Confirm Node and npm installation.
+- [x] Confirm SSH access from MacBook to Raspberry Pi.
+- [x] Check available storage:
 
 ```bash
 df -h /
 ```
 
-- [ ] Preserve at least 2–3 GB free on the 16 GB microSD card.
+- [x] Preserve at least 2–3 GB free on the 16 GB microSD card.
+***As of August 9th, 2026, there is approximately 6 GB used.***
 
 ---
 
