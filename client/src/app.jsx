@@ -34,6 +34,10 @@ function App() {
   const [weatherStatus, setWeatherStatus] = useState('loading');
   const [weatherError, setWeatherError] = useState(null);
 
+  const [sportsData, setSportsData] = useState(null);
+  const [sportsStatus, setSportsStatus] = useState('loading');
+  const [sportsError, setSportsError] = useState(null);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -114,6 +118,47 @@ useEffect(() => {
     window.clearInterval(refreshTimer);
   };
 }, []);
+
+useEffect(() => {
+  let isMounted = true;
+
+  async function loadSports() {
+    try {
+      const response = await fetch('/api/sports');
+
+      if (!response.ok) {
+        throw new Error(`Sports request failed: ${response.status}`);
+      }
+
+      const sports = await response.json();
+
+      if (isMounted) {
+        setSportsData(sports);
+        setSportsStatus('ready');
+        setSportsError(null);
+      }
+    } catch (error) {
+      console.error('Sports failed to load:', error);
+
+      if (isMounted) {
+        setSportsStatus('error');
+        setSportsError(error.message);
+      }
+    }
+  }
+
+  loadSports();
+
+  const refreshTimer = window.setInterval(
+    loadSports,
+    5 * 60 * 1000
+  );
+
+  return () => {
+    isMounted = false;
+    window.clearInterval(refreshTimer);
+  };
+}, []);
   
   return (
     <main class="dashboard-page">
@@ -142,7 +187,11 @@ useEffect(() => {
 
         <CalendarCard status="loading" data={null} />
 
-        <SportsCard status="loading" data={null} />
+        <SportsCard
+          status={sportsStatus}
+          data={sportsData}
+          error={sportsError}
+        />
 
         <CountdownCard
           status={localStatus}

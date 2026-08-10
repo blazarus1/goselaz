@@ -9,6 +9,7 @@ dotenv.config({
 const { initializeDatabase } = require('./db/init');
 const localDataRouter = require('./routes/localData');
 const weatherRouter = require('./routes/weather');
+const sportsRouter = require('./routes/sports');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +28,7 @@ app.get('/health', (req, res) => {
 
 app.use('/api', localDataRouter);
 app.use('/api', weatherRouter);
+app.use('/api', sportsRouter);
 
 app.use((req, res) => {
   res.status(404).json({
