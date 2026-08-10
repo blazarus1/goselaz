@@ -38,6 +38,10 @@ function App() {
   const [sportsStatus, setSportsStatus] = useState('loading');
   const [sportsError, setSportsError] = useState(null);
 
+  const [calendarData, setCalendarData] = useState(null);
+  const [calendarStatus, setCalendarStatus] = useState('loading');
+  const [calendarError, setCalendarError] = useState(null);
+
   useEffect(() => {
     let isMounted = true;
 
@@ -159,6 +163,52 @@ useEffect(() => {
     window.clearInterval(refreshTimer);
   };
 }, []);
+
+useEffect(() => {
+  let isMounted = true;
+
+  async function loadCalendar() {
+    try {
+      const response = await fetch('/api/calendar?view=day');
+
+      if (!response.ok) {
+        const responseData = await response.json();
+
+        throw new Error(
+          responseData.error
+          || `Calendar request failed: ${response.status}`
+        );
+      }
+
+      const calendar = await response.json();
+
+      if (isMounted) {
+        setCalendarData(calendar);
+        setCalendarStatus('ready');
+        setCalendarError(null);
+      }
+    } catch (error) {
+      console.error('Calendar failed to load:', error);
+
+      if (isMounted) {
+        setCalendarStatus('error');
+        setCalendarError(error.message);
+      }
+    }
+  }
+
+  loadCalendar();
+
+  const refreshTimer = window.setInterval(
+    loadCalendar,
+    5 * 60 * 1000
+  );
+
+  return () => {
+    isMounted = false;
+    window.clearInterval(refreshTimer);
+  };
+}, []);
   
   return (
     <main class="dashboard-page">
@@ -185,7 +235,11 @@ useEffect(() => {
           error={weatherError}
         />
 
-        <CalendarCard status="loading" data={null} />
+        <CalendarCard
+          status={calendarStatus}
+          data={calendarData}
+          error={calendarError}
+          />
 
         <SportsCard
           status={sportsStatus}

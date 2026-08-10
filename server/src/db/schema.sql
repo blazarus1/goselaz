@@ -84,3 +84,10 @@ CREATE INDEX IF NOT EXISTS idx_announcements_active_dates
 
 CREATE INDEX IF NOT EXISTS idx_cache_expiration
   ON cached_responses (expires_at);
+
+CREATE TABLE IF NOT EXISTS google_oauth_tokens (
+  id INTEGER PRIMARY KEY CHECK (id = 1),
+  encrypted_tokens TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

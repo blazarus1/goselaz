@@ -10,6 +10,8 @@ const { initializeDatabase } = require('./db/init');
 const localDataRouter = require('./routes/localData');
 const weatherRouter = require('./routes/weather');
 const sportsRouter = require('./routes/sports');
+const googleAuthRouter = require('./routes/googleAuth');
+const calendarRouter = require('./routes/calendar');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,6 +31,9 @@ app.get('/health', (req, res) => {
 app.use('/api', localDataRouter);
 app.use('/api', weatherRouter);
 app.use('/api', sportsRouter);
+app.use(googleAuthRouter);
+app.use('/api', calendarRouter);
+
 
 app.use((req, res) => {
   res.status(404).json({
