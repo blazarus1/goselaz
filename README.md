@@ -1,280 +1,274 @@
-# gosélaz
-Goselaz Home Dashboard
+# Pi Household Dashboard Checklist
 
-# Pi Dashboard MVP Task Board
+## Phase 0 – Planning
 
-## Phase 1 – Hardware, OS, and Kiosk
-
-### Raspberry Pi prep
-- [x] Flash Raspberry Pi OS (Lite or Desktop) to SD card.
-- [ ] Boot Pi, run `raspi-config`:
-  - [ ] Set locale, keyboard, timezone.
-  - [ ] Configure Wi‑Fi or Ethernet.
-  - [ ] Enable SSH.
-- [ ] Verify Pi hostname and local network access.
-
-### Baseline software
-- [ ] Update system packages (`sudo apt update && sudo apt upgrade`).
-- [ ] Install Chromium (`sudo apt install chromium-browser`).
-- [ ] Install Node.js LTS (via `nvm` or official repo).
-- [ ] Install Git.
-
-### Kiosk mode
-- [ ] Create a startup script to launch Chromium in kiosk mode:
-  - [ ] Point to `http://localhost:3000`.
-  - [ ] Use fullscreen flags (e.g., `--kiosk` and any needed Pi-specific flags).
-- [ ] Create a `systemd` unit or autostart entry for the kiosk script.
-- [ ] Test reboot → confirm Chromium auto‑launches in fullscreen.
-- [ ] Confirm exit path (keyboard shortcut or SSH) for maintenance.
+- [x] Confirm Raspberry Pi 3B+ hardware, power supply, monitor, keyboard, and network connection.
+- [ ] Decide primary display resolution.
+- [x] Choose initial dashboard locations.
+- [ ] List preferred sports teams and leagues.
+- [ ] List Google Calendars to display.
+- [x] Gather initial birthdays, countdowns, and household announcements.
+- [x] Create Git repository for `pi-dashboard`.
 
 ---
 
-## Phase 2 – Project Skeleton
+## Phase 1 – MacBook Development Setup
 
-### Repo and structure
-- [ ] Create `pi-dashboard/` repository.
-- [ ] Initialize Node project:
-  - [ ] `npm init` for `server/`.
-  - [ ] `.gitignore` (node_modules, logs, DB, etc.).
-- [ ] Create base folder structure:
-  - [ ] `app/server/src`
-  - [ ] `app/client/src`
-  - [ ] `app/client/public`
-  - [ ] `app/data`
-  - [ ] `app/server/src/db`, `lib`, `routes`, `services`.
+- [x] Install Visual Studio Code.
+- [x] Install Git.
+- [x] Install Node.js LTS.
+- [x] Open/create the project folder in VS Code.
+- [x] Initialize Git repository.
+- [x] Create `.gitignore`.
+- [x] Create `.env.example`.
+- [x] Create `client/`, `server/`, `data/`, and `scripts/` folders.
+- [x] Confirm local Node and npm versions:
 
-### Minimal server
-- [ ] Install Express (or Fastify) for server.
-- [ ] Implement `index.js`:
-  - [ ] `GET /health` route returning `{ status: 'ok' }`.
-  - [ ] Serve static assets from `client/public`.
-  - [ ] Serve main dashboard page at `GET /dashboard` or `/`.
-- [ ] Add basic logging middleware (timestamps + URL).
-- [ ] Add error handling middleware (catch exceptions, return 500).
+```bash
+node --version
+npm --version
+git --version
+```
 
-### Basic client shell
-- [ ] Create `index.html` in `client/public`:
-  - [ ] Root `<div id="app">`.
-  - [ ] Link to main CSS and JS.
-- [ ] Create `main.js` in `client/src`:
-  - [ ] Render a basic “Pi Dashboard” layout.
-- [ ] Implement placeholder card components (even if just functions/templates):
-  - [ ] `ClockCard`
-  - [ ] `WeatherCard`
-  - [ ] `SportsCard`
-  - [ ] `CalendarCard`
-  - [ ] `CountdownCard`
-  - [ ] `BirthdaysCard`
-  - [ ] `AnnouncementsCard`
+- [x] Create Preact + Vite client.
+- [x] Create Node.js + Express server.
+- [x] Add a `GET /health` endpoint.
+- [x] Confirm client and server run locally.
+- [x] Configure Vite proxy from `/api` to local Node server.
+- [x] Create mock API responses for early UI development.
 
 ---
 
-## Phase 3 – Local Data and Persistence
+## Phase 2 – Raspberry Pi Setup
 
-### SQLite setup
-- [ ] Install SQLite on Pi (`sudo apt install sqlite3`).
-- [ ] Add `sqlite3` Node driver (e.g., `better-sqlite3` or `sqlite3`).
-- [ ] Create `schema.sql` with tables:
+- [x] Back up anything needed from current microSD card.
+- [x] Flash Raspberry Pi OS 64-bit Desktop to microSD card.
+- [x] Configure Wi-Fi, SSH, locale, timezone, hostname, and username in Raspberry Pi Imager.
+- [x] Boot Raspberry Pi.
+- [x] Update packages:
+
+```bash
+sudo apt update
+sudo apt full-upgrade -y
+```
+
+- [ ] Verify Pi is using 64-bit OS:
+
+```bash
+uname -m
+dpkg --print-architecture
+```
+
+- [ ] Confirm expected results:
+
+```text
+aarch64
+arm64
+```
+
+- [x] Install Chromium.
+- [x] Install Git.
+- [x] Install Node.js LTS.
+- [x] Install build tools:
+
+```bash
+sudo apt install -y build-essential python3 make g++
+```
+
+- [x] Confirm Node and npm installation.
+- [x] Confirm SSH access from MacBook to Raspberry Pi.
+- [x] Check available storage:
+
+```bash
+df -h /
+```
+
+- [x] Preserve at least 2–3 GB free on the 16 GB microSD card.
+***As of August 9th, 2026, there is approximately 6 GB used.***
+
+---
+
+## Phase 3 – Preact Dashboard Shell
+
+- [x] Create main dashboard layout.
+- [x] Create app-level theme and global CSS.
+- [x] Add readable large typography for wall-display viewing.
+- [x] Add dashboard card layout.
+- [x] Create placeholder components:
+  - [ ] ClockCard
+  - [ ] WeatherCard
+  - [ ] SportsCard
+  - [ ] CalendarCard
+  - [ ] CountdownCard
+  - [ ] BirthdaysCard
+  - [ ] AnnouncementsCard
+- [ ] Test dashboard layout locally at monitor/TV resolution.
+- [ ] Keep animations minimal for Pi 3B+ performance.
+- [ ] Add loading, empty, and error states for every card.
+
+---
+
+## Phase 4 – Local Data and SQLite
+
+- [ ] Install SQLite dependencies.
+- [ ] Create database initialization script.
+- [ ] Create database schema.
+- [ ] Add tables:
   - [ ] `locations`
   - [ ] `favorite_teams`
   - [ ] `countdowns`
   - [ ] `birthdays`
   - [ ] `announcements`
-- [ ] Write a DB initialization script:
-  - [ ] Run `schema.sql` on first startup if DB file is missing.
-  - [ ] Log schema creation.
-
-### Seed data
-- [ ] Insert initial `locations` (e.g., Knoxville, a couple other spots).
-- [ ] Insert initial `favorite_teams` (sport, league, name, external IDs placeholder).
-- [ ] Insert a few `countdowns` (next trip, event).
-- [ ] Insert some `birthdays` (family/friends).
-- [ ] Insert some `announcements` (trash day, recurring notes).
-
-### Local data APIs
-- [ ] Implement `GET /api/countdowns`:
-  - [ ] Query active countdowns.
-  - [ ] Order by soonest `target_date`.
-- [ ] Implement `GET /api/birthdays`:
-  - [ ] Query birthdays.
-  - [ ] Compute upcoming birthdays and return in next N days.
-- [ ] Implement `GET /api/announcements`:
-  - [ ] Filter current announcements by time window.
-- [ ] Plug these endpoints into UI:
-  - [ ] Countdown card reads `/api/countdowns`.
-  - [ ] Birthdays card reads `/api/birthdays`.
-  - [ ] Announcements card reads `/api/announcements`.
-- [ ] Add simple “last updated” times on these cards (based on server time).
+  - [ ] `cached_responses`
+- [ ] Seed initial local data.
+- [ ] Implement local API endpoints:
+  - [ ] `GET /api/countdowns`
+  - [ ] `GET /api/birthdays`
+  - [ ] `GET /api/announcements`
+- [ ] Connect local API endpoints to Preact cards.
+- [ ] Add “last updated” timestamp where useful.
 
 ---
 
-## Phase 4 – Admin Page (Local Data)
+## Phase 5 – Weather
 
-### Auth and routing
-- [ ] Add simple password‑protected admin route:
-  - [ ] `GET /admin` serves admin HTML.
-  - [ ] Lightweight auth (e.g., one shared password from `.env`).
-- [ ] Implement basic session or token mechanism for admin login (only on LAN).
-
-### Admin UI
-- [ ] Build basic admin layout with sections:
-  - [ ] Manage Countdowns.
-  - [ ] Manage Birthdays.
-  - [ ] Manage Announcements.
-  - [ ] Manage Locations.
-  - [ ] Manage Favorite Teams (sports).
-- [ ] For each section, implement:
-  - [ ] List view of records.
-  - [ ] Simple forms for create/update/delete.
-  - [ ] Submit actions calling appropriate API endpoints.
-
-### Admin APIs
-- [ ] Implement POST/PUT/DELETE endpoints:
-  - [ ] `POST /api/countdowns`, `PUT`, `DELETE`.
-  - [ ] `POST /api/birthdays`, `PUT`, `DELETE`.
-  - [ ] `POST /api/announcements`, `PUT`, `DELETE`.
-  - [ ] `POST /api/locations`, `PUT`, `DELETE`.
-  - [ ] `POST /api/favorite-teams`, `PUT`, `DELETE`.
-- [ ] Add validation and basic error responses.
-- [ ] Protect these routes with admin auth middleware.
+- [ ] Select weather API provider.
+- [ ] Create weather API account.
+- [ ] Add API key to `.env`.
+- [ ] Add preferred locations with latitude and longitude.
+- [ ] Create server-side weather service.
+- [ ] Implement weather response cache.
+- [ ] Set weather cache expiration to approximately 15 minutes.
+- [ ] Implement `GET /api/weather`.
+- [ ] Connect WeatherCard to API.
+- [ ] Display location, temperature, condition, icon, and updated time.
+- [ ] Test weather fallback behavior when API is unavailable.
 
 ---
 
-## Phase 5 – Weather Integration (OpenWeather)
+## Phase 6 – Sports
 
-### Config and keys
-- [ ] Sign up for OpenWeather and obtain API key.
-- [ ] Add `OPENWEATHER_API_KEY` to `.env`.
-- [ ] Add config for measurement units (metric/imperial).
-
-### Weather service
-- [ ] Create `weatherService.js`:
-  - [ ] Function to fetch current weather per location (lat/long or city). [ ] Use OpenWeather current API. [16][17]
-  - [ ] Parse and normalize response (temperature, description, icon, feels-like, etc.).
-- [ ] Implement caching:
-  - [ ] Add `cached_responses` table or file‑based cache.
-  - [ ] Cache key pattern: `weather:<location_id>`.
-  - [ ] Store `payload_json`, `fetched_at`, `expires_at`.
-- [ ] Add refresh interval logic:
-  - [ ] Refresh weather at least every 15 minutes.
-  - [ ] Use `node-cron` or in‑process interval to update cache.
-
-### Weather API and UI wiring
-- [ ] Implement `GET /api/weather`:
-  - [ ] Reads all active `locations`.
-  - [ ] Uses cache or fetch to return weather data array.
-- [ ] Wire WeatherCard:
-  - [ ] Display each location name.
-  - [ ] Show current temp, condition, small icon.
-  - [ ] Show last updated timestamp.
+- [ ] Select sports data provider.
+- [ ] Add sports API credentials to `.env`, if required.
+- [ ] Add favorite teams to database.
+- [ ] Store external team IDs for each favorite team.
+- [ ] Create sports service.
+- [ ] Retrieve most recent completed game.
+- [ ] Retrieve next scheduled game.
+- [ ] Normalize sports data into dashboard-friendly format.
+- [ ] Cache sports results.
+- [ ] Implement `GET /api/sports`.
+- [ ] Connect SportsCard to API.
+- [ ] Handle off-season and no-upcoming-game states.
 
 ---
 
-## Phase 6 – Sports Scores and Upcoming Games
+## Phase 7 – Google Calendar
 
-### Provider and config
-- [ ] Sign up or configure TheSportsDB API key for free tier (if needed). [24][27][21]
-- [ ] Add `SPORTS_PROVIDER` and `THESPORTSDB_API_KEY` to `.env`.
-
-### Sports service
-- [ ] Create `sportsService.js`:
-  - [ ] Lookup team IDs (by name or manual config).
-  - [ ] Fetch recent events (last game) for each favorite team. [24][27]
-  - [ ] Fetch upcoming fixtures for each favorite team.
-  - [ ] Normalize to:
-    - [ ] `lastGame`: date, opponent, score, result.
-    - [ ] `nextGame`: date, opponent, venue.
-- [ ] Add caching and scheduling:
-  - [ ] Cache key pattern: `sports:<team_id>`.
-  - [ ] Refresh more often during evening, less often during day.
-  - [ ] Basic interval (e.g., every 10–15 minutes).
-
-### Sports API and UI
-- [ ] Implement `GET /api/sports`:
-  - [ ] Read `favorite_teams` from DB.
-  - [ ] Use service + cache to return scoreboard payload.
-- [ ] Wire SportsCard:
-  - [ ] List each favorite team.
-  - [ ] Show last game result line.
-  - [ ] Show upcoming game line.
-  - [ ] Handle off‑season / no upcoming games gracefully.
-
----
-
-## Phase 7 – Google Calendar Day/Week Outlook
-
-### Google Calendar API setup
 - [ ] Create Google Cloud project.
-- [ ] Enable Calendar API. [22]
-- [ ] Configure OAuth consent screen (internal/personal).
-- [ ] Create OAuth client credentials (type Web app).
-- [ ] Set redirect URI (e.g., `http://localhost:3000/auth/google/callback`).
-- [ ] Store `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` in `.env`.
-
-### Calendar auth flow
-- [ ] Implement `auth.js`:
-  - [ ] Initiate OAuth flow for your account.
-  - [ ] Handle callback and store tokens securely (DB or encrypted file).
-  - [ ] Support token refresh logic using Google’s refresh token mechanism. [1][2]
-- [ ] Implement `GET /auth/google` and `GET /auth/google/callback` endpoints.
-
-### Calendar service
-- [ ] Create `calendarService.js`:
-  - [ ] Use tokens to call `Events.list` on chosen calendar(s) within date window (today + current week). [22]
-  - [ ] Normalize events to:
-    - [ ] Start datetime.
-    - [ ] End datetime.
-    - [ ] Summary/title.
-    - [ ] Location (if any).
-  - [ ] Filter cancelled or past events as appropriate.
-- [ ] Add caching:
-  - [ ] Cache key pattern: `calendar:<calendar_id>:<window>`.
-  - [ ] Refresh every 5 minutes or on explicit user action.
-
-### Calendar APIs and UI
-- [ ] Implement `GET /api/calendar?view=day`:
-  - [ ] Return today’s events list.
-- [ ] Implement `GET /api/calendar?view=week`:
-  - [ ] Return grouped events by day for the current week.
-- [ ] Wire CalendarCard:
-  - [ ] Show “Today” events in a list.
-  - [ ] Show quick week overview (per‑day chips with counts or summaries).
+- [ ] Enable Google Calendar API.
+- [ ] Configure OAuth consent screen.
+- [ ] Create OAuth client credentials.
+- [ ] Add local MacBook callback URL.
+- [ ] Add Raspberry Pi production callback URL.
+- [ ] Add Google credentials to `.env`.
+- [ ] Implement Google OAuth authorization flow.
+- [ ] Store refresh token securely.
+- [ ] Implement token refresh behavior.
+- [ ] Build calendar service.
+- [ ] Retrieve today’s events.
+- [ ] Retrieve current week’s events.
+- [ ] Implement:
+  - [ ] `GET /api/calendar?view=day`
+  - [ ] `GET /api/calendar?view=week`
+- [ ] Connect CalendarCard to API.
+- [ ] Display event times, titles, and locations.
+- [ ] Handle no-events state.
 
 ---
 
-## Phase 8 – UI Polishing and Reliability
+## Phase 8 – Admin Page
 
-### Layout and visual design
-- [ ] Refine dashboard layout:
-  - [ ] Top row: time/date, short “today” summary.
-  - [ ] Left: weather.
-  - [ ] Center: calendar.
-  - [ ] Right: sports.
-  - [ ] Bottom: countdowns, birthdays, announcements.
-- [ ] Implement consistent theme:
-  - [ ] Color palette (soft/cute, readable).
-  - [ ] Typography (large, high contrast for distance).
-  - [ ] Card styles, spacing, icon usage.
+- [ ] Create admin page route.
+- [ ] Add simple local-network authentication.
+- [ ] Create CRUD interface for countdowns.
+- [ ] Create CRUD interface for birthdays.
+- [ ] Create CRUD interface for announcements.
+- [ ] Create CRUD interface for weather locations.
+- [ ] Create CRUD interface for favorite teams.
+- [ ] Add input validation.
+- [ ] Add friendly error messages.
+- [ ] Test edits from MacBook browser.
+- [ ] Confirm dashboard refreshes after admin changes.
 
-### Fallbacks and error handling
-- [ ] Add “last updated” labels on weather, sports, calendar cards.
-- [ ] Show fallback messages when APIs fail (e.g., “Using last known data”).
-- [ ] Log errors with clear source tags (weather, sports, calendar).
-- [ ] Make sure local data cards still render even if external APIs are down.
+---
 
-### Boot and service reliability
-- [ ] Create `pi-dashboard.service` `systemd` unit for Node server:
-  - [ ] Autostart at boot.
-  - [ ] Restart on failure.
-- [ ] Confirm kiosk service starts only after network and server are up.
-- [ ] Test:
-  - [ ] Reboot scenarios.
-  - [ ] Network loss and recovery.
-  - [ ] Manual restart of Node service.
+## Phase 9 – Deploy to Pi
 
-### Documentation
-- [ ] Write README sections:
-  - [ ] Setup steps for Pi.
-  - [ ] How to configure locations, teams, calendars via admin.
-  - [ ] How to restart services.
-  - [ ] Known limitations for MVP.
+- [ ] Clone repository onto Raspberry Pi.
+- [ ] Create production `.env` file on Pi.
+- [ ] Install server dependencies.
+- [ ] Install client dependencies.
+- [ ] Build Preact production files:
+
+```bash
+cd client
+npm run build
+```
+
+- [ ] Configure server to serve built Preact files.
+- [ ] Confirm dashboard works at:
+
+```text
+http://localhost:3000
+```
+
+- [ ] Test dashboard from another device on local network.
+- [ ] Confirm all API integrations work on Pi.
+
+---
+
+## Phase 10 – Kiosk Mode and Reliability
+
+- [ ] Configure Chromium to open dashboard URL in kiosk mode.
+- [ ] Create Node dashboard `systemd` service.
+- [ ] Configure service to restart on failure.
+- [ ] Configure Chromium kiosk startup service.
+- [ ] Ensure kiosk starts after network and Node server are available.
+- [ ] Reboot Pi and confirm dashboard auto-launches.
+- [ ] Test Node server restart.
+- [ ] Test Chromium restart.
+- [ ] Test network loss and recovery.
+- [ ] Configure log rotation.
+- [ ] Document service restart commands.
+- [ ] Create database backup process.
+
+---
+
+## Phase 11 – MVP Validation
+
+- [ ] Clock and date are accurate.
+- [ ] Weather displays for all configured locations.
+- [ ] Sports scores and next games display for favorite teams.
+- [ ] Google Calendar day view displays.
+- [ ] Google Calendar week view displays.
+- [ ] Countdowns display correctly.
+- [ ] Upcoming birthdays display correctly.
+- [ ] Announcements display correctly.
+- [ ] Dashboard handles external API failures gracefully.
+- [ ] Dashboard restarts successfully after Pi reboot.
+- [ ] Dashboard remains usable and readable at intended monitor distance.
+
+---
+
+## Future Enhancements
+
+- [ ] Add rotating local photo slideshow.
+- [ ] Add photo upload/enable controls to admin page.
+- [ ] Add manual grocery-list module.
+- [ ] Add mobile-friendly grocery-list access.
+- [ ] Add grocery categories.
+- [ ] Add press-to-talk grocery entry.
+- [ ] Evaluate cloud or local speech-to-text options.
+- [ ] Add USB/NAS storage for photos and backups.
+- [ ] Upgrade microSD card to 32 GB or larger if storage becomes constrained.
