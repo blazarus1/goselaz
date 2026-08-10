@@ -7,6 +7,7 @@ import CalendarCard from './components/CalendarCard';
 import CountdownCard from './components/CountdownCard';
 import BirthdaysCard from './components/BirthdaysCard';
 import AnnouncementsCard from './components/AnnouncementsCard';
+import AdminPage from './pages/AdminPage';
 
 import './app.css';
 
@@ -20,7 +21,7 @@ async function fetchJson(url) {
   return response.json();
 }
 
-function App() {
+function Dashboard() {
   const [localData, setLocalData] = useState({
     countdowns: null,
     birthdays: null,
@@ -224,6 +225,10 @@ useEffect(() => {
           </span>
           <p>Countdowns, birthdays, and announcements use SQLite.</p>
         </div>
+
+        <a class="admin-button" href="/admin">
+          Manage dashboard
+        </a>
       </header>
 
       <section class="dashboard-grid" aria-label="Household dashboard">
@@ -267,6 +272,14 @@ useEffect(() => {
       </section>
     </main>
   );
+}
+
+function App() {
+  if (window.location.pathname === '/admin') {
+    return <AdminPage />;
+  }
+
+  return <Dashboard />;
 }
 
 export default App;

@@ -12,6 +12,7 @@ const weatherRouter = require('./routes/weather');
 const sportsRouter = require('./routes/sports');
 const googleAuthRouter = require('./routes/googleAuth');
 const calendarRouter = require('./routes/calendar');
+const adminRouter = require('./routes/admin');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -33,6 +34,7 @@ app.use('/api', weatherRouter);
 app.use('/api', sportsRouter);
 app.use(googleAuthRouter);
 app.use('/api', calendarRouter);
+app.use('/api/admin', adminRouter);
 
 
 app.use((req, res) => {
