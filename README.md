@@ -263,6 +263,8 @@ http://localhost:3000
 
 ## Future Enhancements
 
+- [ ] Add Goose calendar
+- [ ] Take away birthdays
 - [ ] Add rotating local photo slideshow.
 - [ ] Add photo upload/enable controls to admin page.
 - [ ] Add manual grocery-list module.
