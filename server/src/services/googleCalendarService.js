@@ -242,7 +242,7 @@ function getLocalDateKey(date) {
   return `${year}-${month}-${day}`;
 }
 
-function normalizeEvent(event, calendarId) {
+function normalizeEvent(event, calendarId, calendarIndex) {
   const isAllDay = Boolean(event.start?.date);
 
   const start = isAllDay
@@ -260,6 +260,7 @@ function normalizeEvent(event, calendarId) {
   return {
     id: `${calendarId}:${event.id}`,
     calendarId,
+    calendarIndex,
     title: event.summary || 'Untitled event',
     location: event.location || null,
     start,
@@ -296,7 +297,7 @@ async function getCalendarData(view) {
   const { start, end } = getDateWindow(view);
 
   const calendarResponses = await Promise.all(
-    calendarIds.map(async (calendarId) => {
+    calendarIds.map(async (calendarId, calendarIndex) => {
       const response = await calendar.events.list({
         calendarId,
         timeMin: start.toISOString(),
@@ -307,7 +308,7 @@ async function getCalendarData(view) {
       });
 
       return (response.data.items || []).map((event) =>
-        normalizeEvent(event, calendarId)
+        normalizeEvent(event, calendarId, calendarIndex)
       );
     })
   );

@@ -1,14 +1,38 @@
 import DashboardCard from './DashboardCard';
 
+function getTimeParts(dateString) {
+  const parts = new Intl.DateTimeFormat([], {
+    hour: 'numeric',
+    minute: '2-digit'
+  }).formatToParts(new Date(dateString));
+
+  const dayPeriod = parts.find((part) => part.type === 'dayPeriod')?.value || '';
+  const time = parts
+    .filter((part) => part.type !== 'dayPeriod')
+    .map((part) => part.value)
+    .join('')
+    .trim();
+
+  return { time, dayPeriod };
+}
+
 function formatTime(event) {
   if (event.isAllDay) {
     return 'All day';
   }
 
-  return new Date(event.start).toLocaleTimeString([], {
-    hour: 'numeric',
-    minute: '2-digit'
-  });
+  const start = getTimeParts(event.start);
+  const end = getTimeParts(event.end);
+
+  const startLabel = start.dayPeriod === end.dayPeriod
+    ? start.time
+    : `${start.time} ${start.dayPeriod}`.trim();
+
+  const endLabel = end.dayPeriod
+    ? `${end.time} ${end.dayPeriod}`
+    : end.time;
+
+  return `${startLabel} – ${endLabel}`;
 }
 
 function formatUpdatedAt(updatedAt) {
@@ -22,6 +46,10 @@ function formatUpdatedAt(updatedAt) {
   });
 }
 
+function CalendarDot({ calendarIndex }) {
+  return <span class={`calendar-dot calendar-dot--${calendarIndex % 4}`} />;
+}
+
 function DayEvents({ events }) {
   return (
     <div class="event-list">
@@ -30,7 +58,10 @@ function DayEvents({ events }) {
           <time dateTime={event.start}>{formatTime(event)}</time>
 
           <div>
-            <h3>{event.title}</h3>
+            <h3>
+              <CalendarDot calendarIndex={event.calendarIndex} />
+              {event.title}
+            </h3>
             {event.location && <p>{event.location}</p>}
           </div>
         </div>
@@ -52,7 +83,10 @@ function WeekEvents({ days }) {
             day.events.map((event) => (
               <div class="week-event" key={event.id}>
                 <span>{formatTime(event)}</span>
-                <p>{event.title}</p>
+                <p>
+                  <CalendarDot calendarIndex={event.calendarIndex} />
+                  {event.title}
+                </p>
               </div>
             ))
           )}

@@ -29,6 +29,7 @@ function SportsCard({ data, status = 'ready', error }) {
             ? `Updated ${updatedTime}`
             : null
       }
+      className="dashboard-card--wide"
     >
       <div class="sports-list">
         {teams.map((team) => (

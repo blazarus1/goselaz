@@ -41,6 +41,7 @@ function WeatherCard({ data, status = 'ready', error }) {
             ? `Updated ${updatedTime}`
             : null
       }
+      className="dashboard-card--wide"
     >
       <div class="weather-list">
         {locations.map((location) => {
