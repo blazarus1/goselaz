@@ -41,17 +41,6 @@ function initializeDatabase() {
     VALUES (?, ?, ?)
   `);
 
-  const seedBirthdays = db.prepare(`
-    INSERT OR IGNORE INTO birthdays (
-      name,
-      birth_month,
-      birth_day,
-      birth_year,
-      notes
-    )
-    VALUES (?, ?, ?, ?, ?)
-  `);
-
   const seedAnnouncements = db.prepare(`
     INSERT OR IGNORE INTO announcements (
       title,
@@ -97,22 +86,6 @@ function initializeDatabase() {
       'Thanksgiving',
       '2026-11-26',
       'Holiday'
-    );
-
-    seedBirthdays.run(
-      'Maddie',
-      8,
-      18,
-      null,
-      null
-    );
-
-    seedBirthdays.run(
-      'Mom',
-      9,
-      4,
-      null,
-      null
     );
 
     seedAnnouncements.run(

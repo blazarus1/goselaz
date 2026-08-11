@@ -31,32 +31,6 @@ const resources = {
     `
   },
 
-  birthdays: {
-    table: 'birthdays',
-    columns: [
-      'name',
-      'birth_month',
-      'birth_day',
-      'birth_year',
-      'notes',
-      'is_active'
-    ],
-    listSql: `
-      SELECT
-        id,
-        name,
-        birth_month AS birthMonth,
-        birth_day AS birthDay,
-        birth_year AS birthYear,
-        notes,
-        is_active AS isActive,
-        created_at AS createdAt,
-        updated_at AS updatedAt
-      FROM birthdays
-      ORDER BY birth_month ASC, birth_day ASC, name ASC
-    `
-  },
-
   announcements: {
     table: 'announcements',
     columns: [
@@ -246,42 +220,6 @@ function normalizePayload(resourceName, payload) {
         title: getRequiredText(payload.title, 'title', fields),
         target_date: targetDate,
         category: getOptionalText(payload.category, 80),
-        is_active: getBoolean(payload.isActive)
-      };
-
-      if (Object.keys(fields).length > 0) {
-        throw createValidationError(fields);
-      }
-
-      return normalized;
-    }
-
-    case 'birthdays': {
-      const normalized = {
-        name: getRequiredText(payload.name, 'name', fields),
-        birth_month: getInteger(
-          payload.birthMonth,
-          'birthMonth',
-          fields,
-          1,
-          12
-        ),
-        birth_day: getInteger(
-          payload.birthDay,
-          'birthDay',
-          fields,
-          1,
-          31
-        ),
-        birth_year: getInteger(
-          payload.birthYear,
-          'birthYear',
-          fields,
-          1900,
-          new Date().getFullYear(),
-          null
-        ),
-        notes: getOptionalText(payload.notes),
         is_active: getBoolean(payload.isActive)
       };
 

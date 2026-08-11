@@ -145,7 +145,6 @@
 .sports-list,
 .event-list,
 .countdown-list,
-.birthday-list,
 .announcement-list {
   display: grid;
   gap: var(--space-3);
@@ -153,7 +152,6 @@
 
 .weather-row,
 .countdown-row,
-.birthday-row,
 .announcement-row,
 .event-row {
   display: flex;
@@ -166,7 +164,6 @@
 
 .weather-row:last-child,
 .countdown-row:last-child,
-.birthday-row:last-child,
 .announcement-row:last-child,
 .event-row:last-child {
   padding-bottom: 0;
@@ -177,7 +174,6 @@
 .sports-team h3,
 .event-row h3,
 .countdown-row h3,
-.birthday-row h3,
 .announcement-row h3 {
   font-size: var(--text-base);
 }
@@ -186,7 +182,6 @@
 .sports-team p,
 .event-row p,
 .countdown-row p,
-.birthday-row p,
 .announcement-row p {
   color: var(--color-muted);
   font-size: var(--text-sm);
@@ -284,29 +279,6 @@
   font-size: var(--text-xs);
   font-weight: 700;
   text-transform: uppercase;
-}
-
-.birthday-row {
-  justify-content: start;
-}
-
-.birthday-avatar {
-  display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
-  flex: 0 0 auto;
-  place-items: center;
-  border-radius: 50%;
-  color: var(--color-primary);
-  background: var(--color-primary-soft);
-  font-weight: 800;
-}
-
-.birthday-row > span {
-  margin-left: auto;
-  color: var(--color-primary);
-  font-size: var(--text-lg);
-  font-weight: 800;
 }
 
 .announcement-row {

@@ -14,20 +14,6 @@ const resourceDefinitions = [
       `${record.title} · ${record.targetDate}${record.category ? ` · ${record.category}` : ''}`
   },
   {
-    key: 'birthdays',
-    label: 'Birthdays',
-    fields: [
-      { name: 'name', label: 'Name', type: 'text', required: true },
-      { name: 'birthMonth', label: 'Month', type: 'number', min: 1, max: 12, required: true },
-      { name: 'birthDay', label: 'Day', type: 'number', min: 1, max: 31, required: true },
-      { name: 'birthYear', label: 'Year', type: 'number', min: 1900, max: 2100 },
-      { name: 'notes', label: 'Notes', type: 'textarea' },
-      { name: 'isActive', label: 'Active', type: 'checkbox', defaultValue: true }
-    ],
-    summary: (record) =>
-      `${record.name} · ${record.birthMonth}/${record.birthDay}`
-  },
-  {
     key: 'announcements',
     label: 'Announcements',
     fields: [

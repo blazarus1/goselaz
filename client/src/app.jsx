@@ -5,7 +5,6 @@ import WeatherCard from './components/WeatherCard';
 import SportsCard from './components/SportsCard';
 import CalendarCard from './components/CalendarCard';
 import CountdownCard from './components/CountdownCard';
-import BirthdaysCard from './components/BirthdaysCard';
 import AnnouncementsCard from './components/AnnouncementsCard';
 import AdminPage from './pages/AdminPage';
 
@@ -24,7 +23,6 @@ async function fetchJson(url) {
 function Dashboard() {
   const [localData, setLocalData] = useState({
     countdowns: null,
-    birthdays: null,
     announcements: null
   });
 
@@ -48,9 +46,8 @@ function Dashboard() {
 
     async function loadLocalData() {
       try {
-        const [countdowns, birthdays, announcements] = await Promise.all([
+        const [countdowns, announcements] = await Promise.all([
           fetchJson('/api/countdowns'),
-          fetchJson('/api/birthdays'),
           fetchJson('/api/announcements')
         ]);
 
@@ -60,7 +57,6 @@ function Dashboard() {
 
         setLocalData({
           countdowns,
-          birthdays,
           announcements
         });
 
@@ -223,7 +219,7 @@ useEffect(() => {
           <span class={`demo-badge demo-badge--${localStatus}`}>
             Local data: {localStatus}
           </span>
-          <p>Countdowns, birthdays, and announcements use SQLite.</p>
+          <p>Countdowns and announcements use SQLite.</p>
         </div>
 
         <a class="admin-button" href="/admin">
@@ -255,12 +251,6 @@ useEffect(() => {
         <CountdownCard
           status={localStatus}
           data={localData.countdowns}
-          error={localError}
-        />
-
-        <BirthdaysCard
-          status={localStatus}
-          data={localData.birthdays}
           error={localError}
         />
 
