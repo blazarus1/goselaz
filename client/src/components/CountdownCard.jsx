@@ -11,7 +11,6 @@ function CountdownCard({ data, status = 'ready' }) {
       isEmpty={status === 'ready' && countdowns.length === 0}
       error="Countdowns could not be loaded."
       footer={data?.updatedAt ? `Last updated ${data.updatedAt}` : null}
-      className="dashboard-card--wide"
     >
       <div class="countdown-list">
         {countdowns.map((countdown) => (

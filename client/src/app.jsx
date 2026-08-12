@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
 
-import ClockCard from './components/ClockCard';
-import WeatherCard from './components/WeatherCard';
+import WeekOutlookBar from './components/WeekOutlookBar';
+import TimeWeatherBar from './components/TimeWeatherBar';
 import SportsCard from './components/SportsCard';
 import CalendarCard from './components/CalendarCard';
 import CountdownCard from './components/CountdownCard';
@@ -40,6 +40,10 @@ function Dashboard() {
   const [calendarData, setCalendarData] = useState(null);
   const [calendarStatus, setCalendarStatus] = useState('loading');
   const [calendarError, setCalendarError] = useState(null);
+
+  const [weekCalendarData, setWeekCalendarData] = useState(null);
+  const [weekCalendarStatus, setWeekCalendarStatus] = useState('loading');
+  const [weekCalendarError, setWeekCalendarError] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -206,7 +210,53 @@ useEffect(() => {
     window.clearInterval(refreshTimer);
   };
 }, []);
-  
+
+useEffect(() => {
+  let isMounted = true;
+
+  async function loadWeekCalendar() {
+    try {
+      const response = await fetch('/api/calendar?view=week');
+
+      if (!response.ok) {
+        const responseData = await response.json();
+
+        throw new Error(
+          responseData.error
+          || `Calendar request failed: ${response.status}`
+        );
+      }
+
+      const calendar = await response.json();
+
+      if (isMounted) {
+        setWeekCalendarData(calendar);
+        setWeekCalendarStatus('ready');
+        setWeekCalendarError(null);
+      }
+    } catch (error) {
+      console.error('Week calendar failed to load:', error);
+
+      if (isMounted) {
+        setWeekCalendarStatus('error');
+        setWeekCalendarError(error.message);
+      }
+    }
+  }
+
+  loadWeekCalendar();
+
+  const refreshTimer = window.setInterval(
+    loadWeekCalendar,
+    5 * 60 * 1000
+  );
+
+  return () => {
+    isMounted = false;
+    window.clearInterval(refreshTimer);
+  };
+}, []);
+
   return (
     <main class="dashboard-page">
       <header class="dashboard-topbar">
@@ -227,15 +277,19 @@ useEffect(() => {
         </a>
       </header>
 
+      <WeekOutlookBar
+        status={weekCalendarStatus}
+        data={weekCalendarData}
+        error={weekCalendarError}
+      />
+
+      <TimeWeatherBar
+        weatherStatus={weatherStatus}
+        weatherData={weatherData}
+        weatherError={weatherError}
+      />
+
       <section class="dashboard-grid" aria-label="Household dashboard">
-        <ClockCard />
-
-        <WeatherCard
-          status={weatherStatus}
-          data={weatherData}
-          error={weatherError}
-        />
-
         <CalendarCard
           status={calendarStatus}
           data={calendarData}

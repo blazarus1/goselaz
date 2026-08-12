@@ -223,11 +223,6 @@ function getDateWindow(view) {
   }
 
   const start = startOfLocalDay(now);
-  const dayOfWeek = start.getDay();
-  const daysSinceMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-
-  start.setDate(start.getDate() - daysSinceMonday);
-
   const end = new Date(start);
   end.setDate(end.getDate() + 7);
 
