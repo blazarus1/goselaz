@@ -80,6 +80,28 @@
   box-shadow: var(--shadow-card);
 }
 
+.dashboard-card--wide {
+  grid-column: span 4;
+}
+
+.dashboard-card--calendar-side {
+  grid-column: 1;
+}
+
+.dashboard-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
+  align-items: start;
+  gap: var(--space-4);
+}
+
+.dashboard-side {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: var(--space-4);
+}
+
 .outlook-bar {
   display: flex;
   gap: var(--space-3);
@@ -154,7 +176,6 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  margin-bottom: var(--space-4);
   padding: var(--space-5) var(--space-6);
   color: #fff;
   border-radius: var(--radius-lg);
@@ -466,8 +487,13 @@
 }
 
 @media (max-width: 1100px) {
-  .dashboard-card {
+  .dashboard-card,
+  .dashboard-card--wide {
     grid-column: span 6;
+  }
+
+  .dashboard-columns {
+    grid-template-columns: 1fr;
   }
 
   .outlook-bar {
@@ -498,7 +524,8 @@
     margin-top: var(--space-2);
   }
 
-  .dashboard-card {
+  .dashboard-card,
+  .dashboard-card--wide {
     grid-column: 1 / -1;
   }
 

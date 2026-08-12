@@ -283,36 +283,40 @@ useEffect(() => {
         error={weekCalendarError}
       />
 
-      <TimeWeatherBar
-        weatherStatus={weatherStatus}
-        weatherData={weatherData}
-        weatherError={weatherError}
-      />
-
-      <section class="dashboard-grid" aria-label="Household dashboard">
+      <section class="dashboard-columns" aria-label="Today and household dashboard">
         <CalendarCard
           status={calendarStatus}
           data={calendarData}
           error={calendarError}
+        />
+
+        <div class="dashboard-side">
+          <TimeWeatherBar
+            weatherStatus={weatherStatus}
+            weatherData={weatherData}
+            weatherError={weatherError}
           />
 
-        <SportsCard
-          status={sportsStatus}
-          data={sportsData}
-          error={sportsError}
-        />
+          <section class="dashboard-grid" aria-label="Household dashboard">
+            <SportsCard
+              status={sportsStatus}
+              data={sportsData}
+              error={sportsError}
+            />
 
-        <CountdownCard
-          status={localStatus}
-          data={localData.countdowns}
-          error={localError}
-        />
+            <CountdownCard
+              status={localStatus}
+              data={localData.countdowns}
+              error={localError}
+            />
 
-        <AnnouncementsCard
-          status={localStatus}
-          data={localData.announcements}
-          error={localError}
-        />
+            <AnnouncementsCard
+              status={localStatus}
+              data={localData.announcements}
+              error={localError}
+            />
+          </section>
+        </div>
       </section>
     </main>
   );
