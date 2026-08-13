@@ -63,6 +63,22 @@ const resources = {
     `
   },
 
+  groceries: {
+    table: 'grocery_items',
+    columns: ['item', 'quantity', 'is_checked'],
+    listSql: `
+      SELECT
+        id,
+        item,
+        quantity,
+        is_checked AS isChecked,
+        created_at AS createdAt,
+        updated_at AS updatedAt
+      FROM grocery_items
+      ORDER BY is_checked ASC, item ASC
+    `
+  },
+
   locations: {
     table: 'locations',
     columns: [
@@ -264,6 +280,20 @@ function normalizePayload(resourceName, payload) {
         starts_at: startsAt,
         ends_at: endsAt,
         is_active: getBoolean(payload.isActive)
+      };
+
+      if (Object.keys(fields).length > 0) {
+        throw createValidationError(fields);
+      }
+
+      return normalized;
+    }
+
+    case 'groceries': {
+      const normalized = {
+        item: getRequiredText(payload.item, 'item', fields, 120),
+        quantity: getOptionalText(payload.quantity, 60),
+        is_checked: getBoolean(payload.isChecked)
       };
 
       if (Object.keys(fields).length > 0) {

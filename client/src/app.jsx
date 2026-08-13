@@ -4,6 +4,7 @@ import WeekOutlookBar from './components/WeekOutlookBar';
 import TimeWeatherBar from './components/TimeWeatherBar';
 import SportsCard from './components/SportsCard';
 import CalendarCard from './components/CalendarCard';
+import GroceryListCard from './components/GroceryListCard';
 import CountdownCard from './components/CountdownCard';
 import AnnouncementsCard from './components/AnnouncementsCard';
 import AdminPage from './pages/AdminPage';
@@ -44,6 +45,10 @@ function Dashboard() {
   const [weekCalendarData, setWeekCalendarData] = useState(null);
   const [weekCalendarStatus, setWeekCalendarStatus] = useState('loading');
   const [weekCalendarError, setWeekCalendarError] = useState(null);
+
+  const [groceryData, setGroceryData] = useState(null);
+  const [groceryStatus, setGroceryStatus] = useState('loading');
+  const [groceryError, setGroceryError] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -257,6 +262,76 @@ useEffect(() => {
   };
 }, []);
 
+useEffect(() => {
+  let isMounted = true;
+
+  async function loadGroceries() {
+    try {
+      const response = await fetch('/api/groceries');
+
+      if (!response.ok) {
+        throw new Error(`Grocery list request failed: ${response.status}`);
+      }
+
+      const groceries = await response.json();
+
+      if (isMounted) {
+        setGroceryData(groceries);
+        setGroceryStatus('ready');
+        setGroceryError(null);
+      }
+    } catch (error) {
+      console.error('Grocery list failed to load:', error);
+
+      if (isMounted) {
+        setGroceryStatus('error');
+        setGroceryError(error.message);
+      }
+    }
+  }
+
+  loadGroceries();
+
+  const refreshTimer = window.setInterval(
+    loadGroceries,
+    5 * 60 * 1000
+  );
+
+  return () => {
+    isMounted = false;
+    window.clearInterval(refreshTimer);
+  };
+}, []);
+
+async function handleToggleGroceryItem(itemId) {
+  try {
+    const response = await fetch(`/api/groceries/${itemId}/toggle`, {
+      method: 'PATCH'
+    });
+
+    if (!response.ok) {
+      throw new Error(`Grocery item toggle failed: ${response.status}`);
+    }
+
+    const updatedItem = await response.json();
+
+    setGroceryData((current) => {
+      if (!current) {
+        return current;
+      }
+
+      return {
+        ...current,
+        items: current.items.map((item) =>
+          item.id === updatedItem.id ? updatedItem : item
+        )
+      };
+    });
+  } catch (error) {
+    console.error('Failed to toggle grocery item:', error);
+  }
+}
+
   return (
     <main class="dashboard-page">
       <header class="dashboard-topbar">
@@ -284,11 +359,20 @@ useEffect(() => {
       />
 
       <section class="dashboard-columns" aria-label="Today and household dashboard">
-        <CalendarCard
-          status={calendarStatus}
-          data={calendarData}
-          error={calendarError}
-        />
+        <div class="dashboard-side">
+          <CalendarCard
+            status={calendarStatus}
+            data={calendarData}
+            error={calendarError}
+          />
+
+          <GroceryListCard
+            status={groceryStatus}
+            data={groceryData}
+            error={groceryError}
+            onToggleItem={handleToggleGroceryItem}
+          />
+        </div>
 
         <div class="dashboard-side">
           <TimeWeatherBar

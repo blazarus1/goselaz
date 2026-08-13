@@ -85,7 +85,6 @@ function CalendarCard({ data, status = 'ready', error }) {
           ? `Updated ${formatUpdatedAt(data.updatedAt)}`
           : null
       }
-      className="dashboard-card--calendar-side"
     >
       <DayEvents events={events} />
     </DashboardCard>

@@ -50,6 +50,16 @@ CREATE TABLE IF NOT EXISTS announcements (
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS grocery_items (
+  id INTEGER PRIMARY KEY,
+  item TEXT NOT NULL UNIQUE,
+  quantity TEXT,
+  is_checked INTEGER NOT NULL DEFAULT 0
+    CHECK (is_checked IN (0, 1)),
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS cached_responses (
   cache_key TEXT PRIMARY KEY,
   payload_json TEXT NOT NULL,
@@ -63,6 +73,9 @@ CREATE INDEX IF NOT EXISTS idx_countdowns_active_target
 
 CREATE INDEX IF NOT EXISTS idx_announcements_active_dates
   ON announcements (is_active, starts_at, ends_at);
+
+CREATE INDEX IF NOT EXISTS idx_grocery_items_checked
+  ON grocery_items (is_checked, item);
 
 CREATE INDEX IF NOT EXISTS idx_cache_expiration
   ON cached_responses (expires_at);

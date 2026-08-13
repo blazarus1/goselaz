@@ -38,6 +38,17 @@ const resourceDefinitions = [
       `${record.title}${record.priority ? ` · ${record.priority}` : ''}`
   },
   {
+    key: 'groceries',
+    label: 'Grocery list',
+    fields: [
+      { name: 'item', label: 'Item', type: 'text', required: true },
+      { name: 'quantity', label: 'Quantity', type: 'text' },
+      { name: 'isChecked', label: 'Picked up', type: 'checkbox', defaultValue: false }
+    ],
+    summary: (record) =>
+      `${record.item}${record.quantity ? ` · ${record.quantity}` : ''}`
+  },
+  {
     key: 'locations',
     label: 'Weather locations',
     fields: [

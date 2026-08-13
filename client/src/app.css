@@ -84,10 +84,6 @@
   grid-column: span 4;
 }
 
-.dashboard-card--calendar-side {
-  grid-column: 1;
-}
-
 .dashboard-columns {
   display: grid;
   grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
@@ -424,6 +420,64 @@
 
 .calendar-dot--3 {
   background: var(--color-error);
+}
+
+.grocery-list {
+  display: grid;
+  gap: var(--space-1);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.grocery-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  color: inherit;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.grocery-item__check {
+  display: grid;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.grocery-item--checked .grocery-item__check {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.grocery-item--checked .grocery-item__check::after {
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 800;
+  content: '✓';
+}
+
+.grocery-item__label {
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.grocery-item--checked .grocery-item__label {
+  color: var(--color-muted);
+  text-decoration: line-through;
+}
+
+.grocery-item__quantity {
+  color: var(--color-muted);
+  font-weight: 500;
 }
 
 .card-state {
