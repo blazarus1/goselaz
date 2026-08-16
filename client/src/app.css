@@ -68,6 +68,8 @@
 }
 
 .dashboard-card {
+  --color-muted: #ffffff;
+
   display: flex;
   min-height: 15rem;
   flex-direction: column;
@@ -103,6 +105,8 @@
 }
 
 .outlook-bar {
+  --color-muted: #ffffff;
+
   display: flex;
   gap: var(--space-3);
   margin-bottom: var(--space-4);
