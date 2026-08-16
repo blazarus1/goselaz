@@ -34,6 +34,11 @@
   --color-error: #a33d52;
   --color-warning: #a15d20;
   --shadow-card: 0 12px 28px rgb(30 33 36 / 10%);
+  --card-tint: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-primary) 12%, var(--color-surface)),
+    color-mix(in srgb, var(--color-success) 12%, var(--color-surface))
+  );
 }
 
 @media (prefers-color-scheme: dark) {
