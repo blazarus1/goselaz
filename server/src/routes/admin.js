@@ -31,38 +31,6 @@ const resources = {
     `
   },
 
-  announcements: {
-    table: 'announcements',
-    columns: [
-      'title',
-      'body',
-      'priority',
-      'starts_at',
-      'ends_at',
-      'is_active'
-    ],
-    listSql: `
-      SELECT
-        id,
-        title,
-        body,
-        priority,
-        starts_at AS startsAt,
-        ends_at AS endsAt,
-        is_active AS isActive,
-        created_at AS createdAt,
-        updated_at AS updatedAt
-      FROM announcements
-      ORDER BY
-        CASE priority
-          WHEN 'high' THEN 1
-          WHEN 'normal' THEN 2
-          WHEN 'low' THEN 3
-        END,
-        created_at DESC
-    `
-  },
-
   groceries: {
     table: 'grocery_items',
     columns: ['item', 'quantity', 'is_checked'],
@@ -205,22 +173,6 @@ function getBoolean(value) {
     : 0;
 }
 
-function getOptionalDateTime(value, fieldName, fields) {
-  if (!value) {
-    return null;
-  }
-
-  const parsedDate = new Date(value);
-
-  if (Number.isNaN(parsedDate.getTime())) {
-    fields[fieldName] = 'Enter a valid date and time.';
-
-    return null;
-  }
-
-  return parsedDate.toISOString();
-}
-
 function normalizePayload(resourceName, payload) {
   const fields = {};
 
@@ -236,49 +188,6 @@ function normalizePayload(resourceName, payload) {
         title: getRequiredText(payload.title, 'title', fields),
         target_date: targetDate,
         category: getOptionalText(payload.category, 80),
-        is_active: getBoolean(payload.isActive)
-      };
-
-      if (Object.keys(fields).length > 0) {
-        throw createValidationError(fields);
-      }
-
-      return normalized;
-    }
-
-    case 'announcements': {
-      const priority = payload.priority || 'normal';
-
-      if (!['low', 'normal', 'high'].includes(priority)) {
-        fields.priority = 'Choose low, normal, or high priority.';
-      }
-
-      const startsAt = getOptionalDateTime(
-        payload.startsAt,
-        'startsAt',
-        fields
-      );
-
-      const endsAt = getOptionalDateTime(
-        payload.endsAt,
-        'endsAt',
-        fields
-      );
-
-      if (
-        startsAt
-        && endsAt
-        && new Date(endsAt) < new Date(startsAt)
-      ) {
-        fields.endsAt = 'End time must occur after start time.';
-      }
-
-      const normalized = {
-        title: getRequiredText(payload.title, 'title', fields),
-        body: getOptionalText(payload.body),
-        priority,
-        starts_at: startsAt,
-        ends_at: endsAt,
         is_active: getBoolean(payload.isActive)
       };
 

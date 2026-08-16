@@ -6,7 +6,6 @@ import SportsCard from './components/SportsCard';
 import CalendarCard from './components/CalendarCard';
 import GroceryListCard from './components/GroceryListCard';
 import CountdownCard from './components/CountdownCard';
-import AnnouncementsCard from './components/AnnouncementsCard';
 import AdminPage from './pages/AdminPage';
 
 import './app.css';
@@ -22,13 +21,9 @@ async function fetchJson(url) {
 }
 
 function Dashboard() {
-  const [localData, setLocalData] = useState({
-    countdowns: null,
-    announcements: null
-  });
-
-  const [localStatus, setLocalStatus] = useState('loading');
-  const [localError, setLocalError] = useState(null);
+  const [countdownsData, setCountdownsData] = useState(null);
+  const [countdownsStatus, setCountdownsStatus] = useState('loading');
+  const [countdownsError, setCountdownsError] = useState(null);
 
   const [weatherData, setWeatherData] = useState(null);
   const [weatherStatus, setWeatherStatus] = useState('loading');
@@ -53,35 +48,27 @@ function Dashboard() {
   useEffect(() => {
     let isMounted = true;
 
-    async function loadLocalData() {
+    async function loadCountdowns() {
       try {
-        const [countdowns, announcements] = await Promise.all([
-          fetchJson('/api/countdowns'),
-          fetchJson('/api/announcements')
-        ]);
+        const countdowns = await fetchJson('/api/countdowns');
 
         if (!isMounted) {
           return;
         }
 
-        setLocalData({
-          countdowns,
-          announcements
-        });
-
-        setLocalStatus('ready');
+        setCountdownsData(countdowns);
+        setCountdownsStatus('ready');
       } catch (error) {
-        console.error('Local dashboard data failed to load:', error);
+        console.error('Countdowns failed to load:', error);
 
         if (isMounted) {
-          setLocalError(error.message);
-          setLocalStatus('error');
+          setCountdownsError(error.message);
+          setCountdownsStatus('error');
         }
       }
     }
 
-
-    loadLocalData();
+    loadCountdowns();
 
     return () => {
       isMounted = false;
@@ -340,10 +327,10 @@ async function handleToggleGroceryItem(itemId) {
         </div>
 
         <div class="dashboard-topbar__right">
-          <span class={`demo-badge demo-badge--${localStatus}`}>
-            Local data: {localStatus}
+          <span class={`demo-badge demo-badge--${countdownsStatus}`}>
+            Local data: {countdownsStatus}
           </span>
-          <p>Countdowns and announcements use SQLite.</p>
+          <p>Countdowns and groceries use SQLite.</p>
         </div>
 
         <a class="admin-button" href="/admin">
@@ -381,22 +368,16 @@ async function handleToggleGroceryItem(itemId) {
           />
 
           <section class="dashboard-grid" aria-label="Household dashboard">
+            <CountdownCard
+              status={countdownsStatus}
+              data={countdownsData}
+              error={countdownsError}
+            />
+
             <SportsCard
               status={sportsStatus}
               data={sportsData}
               error={sportsError}
-            />
-
-            <CountdownCard
-              status={localStatus}
-              data={localData.countdowns}
-              error={localError}
-            />
-
-            <AnnouncementsCard
-              status={localStatus}
-              data={localData.announcements}
-              error={localError}
             />
           </section>
         </div>

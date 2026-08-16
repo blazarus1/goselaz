@@ -84,6 +84,10 @@
   grid-column: span 4;
 }
 
+.dashboard-card--extra-wide {
+  grid-column: span 8;
+}
+
 .dashboard-columns {
   display: grid;
   grid-template-columns: minmax(0, 4fr) minmax(0, 8fr);
@@ -260,14 +264,12 @@
 
 .sports-list,
 .event-list,
-.countdown-list,
-.announcement-list {
+.countdown-list {
   display: grid;
   gap: var(--space-3);
 }
 
 .countdown-row,
-.announcement-row,
 .event-row {
   display: flex;
   align-items: center;
@@ -278,7 +280,6 @@
 }
 
 .countdown-row:last-child,
-.announcement-row:last-child,
 .event-row:last-child {
   padding-bottom: 0;
   border-bottom: 0;
@@ -286,15 +287,13 @@
 
 .sports-team h3,
 .event-row h3,
-.countdown-row h3,
-.announcement-row h3 {
+.countdown-row h3 {
   font-size: var(--text-base);
 }
 
 .sports-team p,
 .event-row p,
-.countdown-row p,
-.announcement-row p {
+.countdown-row p {
   color: var(--color-muted);
   font-size: var(--text-sm);
 }
@@ -373,28 +372,6 @@
   font-size: var(--text-xs);
   font-weight: 700;
   text-transform: uppercase;
-}
-
-.announcement-row {
-  align-items: start;
-  justify-content: start;
-}
-
-.priority-dot {
-  width: 0.625rem;
-  height: 0.625rem;
-  flex: 0 0 auto;
-  margin-top: 0.4rem;
-  border-radius: 50%;
-  background: var(--color-primary);
-}
-
-.priority-dot--high {
-  background: var(--color-error);
-}
-
-.priority-dot--normal {
-  background: var(--color-warning);
 }
 
 .calendar-dot {
@@ -542,7 +519,8 @@
 
 @media (max-width: 1100px) {
   .dashboard-card,
-  .dashboard-card--wide {
+  .dashboard-card--wide,
+  .dashboard-card--extra-wide {
     grid-column: span 6;
   }
 
@@ -579,7 +557,8 @@
   }
 
   .dashboard-card,
-  .dashboard-card--wide {
+  .dashboard-card--wide,
+  .dashboard-card--extra-wide {
     grid-column: 1 / -1;
   }
 

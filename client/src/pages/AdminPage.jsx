@@ -14,30 +14,6 @@ const resourceDefinitions = [
       `${record.title} · ${record.targetDate}${record.category ? ` · ${record.category}` : ''}`
   },
   {
-    key: 'announcements',
-    label: 'Announcements',
-    fields: [
-      { name: 'title', label: 'Title', type: 'text', required: true },
-      { name: 'body', label: 'Message', type: 'textarea' },
-      {
-        name: 'priority',
-        label: 'Priority',
-        type: 'select',
-        defaultValue: 'normal',
-        options: [
-          { value: 'low', label: 'Low' },
-          { value: 'normal', label: 'Normal' },
-          { value: 'high', label: 'High' }
-        ]
-      },
-      { name: 'startsAt', label: 'Starts at', type: 'datetime-local' },
-      { name: 'endsAt', label: 'Ends at', type: 'datetime-local' },
-      { name: 'isActive', label: 'Active', type: 'checkbox', defaultValue: true }
-    ],
-    summary: (record) =>
-      `${record.title}${record.priority ? ` · ${record.priority}` : ''}`
-  },
-  {
     key: 'groceries',
     label: 'Grocery list',
     fields: [

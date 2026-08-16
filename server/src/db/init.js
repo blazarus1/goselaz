@@ -41,15 +41,6 @@ function initializeDatabase() {
     VALUES (?, ?, ?)
   `);
 
-  const seedAnnouncements = db.prepare(`
-    INSERT OR IGNORE INTO announcements (
-      title,
-      body,
-      priority
-    )
-    VALUES (?, ?, ?)
-  `);
-
   const seedDatabase = db.transaction(() => {
     seedLocations.run(
       'Knoxville, TN',
@@ -86,18 +77,6 @@ function initializeDatabase() {
       'Thanksgiving',
       '2026-11-26',
       'Holiday'
-    );
-
-    seedAnnouncements.run(
-      'Trash night',
-      'Put bins out Sunday evening.',
-      'normal'
-    );
-
-    seedAnnouncements.run(
-      'Grocery reminder',
-      'Add meal-prep ingredients before the next store run.',
-      'high'
     );
   });
 

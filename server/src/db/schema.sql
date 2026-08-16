@@ -36,20 +36,6 @@ CREATE TABLE IF NOT EXISTS countdowns (
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS announcements (
-  id INTEGER PRIMARY KEY,
-  title TEXT NOT NULL UNIQUE,
-  body TEXT,
-  priority TEXT NOT NULL DEFAULT 'normal'
-    CHECK (priority IN ('low', 'normal', 'high')),
-  starts_at TEXT,
-  ends_at TEXT,
-  is_active INTEGER NOT NULL DEFAULT 1
-    CHECK (is_active IN (0, 1)),
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE IF NOT EXISTS grocery_items (
   id INTEGER PRIMARY KEY,
   item TEXT NOT NULL UNIQUE,
@@ -70,9 +56,6 @@ CREATE TABLE IF NOT EXISTS cached_responses (
 
 CREATE INDEX IF NOT EXISTS idx_countdowns_active_target
   ON countdowns (is_active, target_date);
-
-CREATE INDEX IF NOT EXISTS idx_announcements_active_dates
-  ON announcements (is_active, starts_at, ends_at);
 
 CREATE INDEX IF NOT EXISTS idx_grocery_items_checked
   ON grocery_items (is_checked, item);

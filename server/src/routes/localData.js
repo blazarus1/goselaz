@@ -63,47 +63,6 @@ router.get('/countdowns', (req, res) => {
   }
 });
 
-router.get('/announcements', (req, res) => {
-  try {
-    const db = getDb();
-    const now = new Date().toISOString();
-
-    const announcements = db.prepare(`
-      SELECT
-        id,
-        title,
-        body,
-        priority,
-        starts_at AS startsAt,
-        ends_at AS endsAt
-      FROM announcements
-      WHERE is_active = 1
-        AND (starts_at IS NULL OR starts_at <= ?)
-        AND (ends_at IS NULL OR ends_at >= ?)
-      ORDER BY
-        CASE priority
-          WHEN 'high' THEN 1
-          WHEN 'normal' THEN 2
-          WHEN 'low' THEN 3
-          ELSE 4
-        END,
-        created_at DESC
-      LIMIT 6
-    `).all(now, now);
-
-    res.json({
-      updatedAt: getLastUpdated('announcements'),
-      announcements
-    });
-  } catch (error) {
-    console.error('GET /api/announcements failed:', error);
-
-    res.status(500).json({
-      error: 'Unable to load announcements.'
-    });
-  }
-});
-
 router.get('/groceries', (req, res) => {
   try {
     const db = getDb();
