@@ -308,11 +308,6 @@
   border-bottom: 0;
 }
 
-.sports-league {
-  margin-top: var(--space-1);
-  margin-bottom: var(--space-3);
-}
-
 .sports-detail {
   display: grid;
   grid-template-columns: 3.75rem 1fr;

@@ -35,9 +35,6 @@ function SportsCard({ data, status = 'ready', error }) {
         {teams.map((team) => (
           <section class="sports-team" key={team.id}>
             <h3>{team.team}</h3>
-            <p class="sports-league">
-              {[team.sport, team.league].filter(Boolean).join(' · ')}
-            </p>
 
             {team.source === 'not-configured' && (
               <p class="sports-message">
@@ -54,41 +51,23 @@ function SportsCard({ data, status = 'ready', error }) {
             {team.source !== 'not-configured'
               && team.source !== 'unavailable'
               && (
-                <>
-                  <div class="sports-detail">
-                    <span>Last</span>
+                <div class="sports-detail">
+                  <span>Last</span>
 
-                    {team.lastGame ? (
-                      <p>
-                        <strong
-                          class={`result result--${team.lastGame.result.toLowerCase()}`}
-                        >
-                          {team.lastGame.result}
-                        </strong>
-                        {' '}
-                        vs {team.lastGame.opponent} · {team.lastGame.score}
-                      </p>
-                    ) : (
-                      <p>No recent completed game.</p>
-                    )}
-                  </div>
-
-                  <div class="sports-detail">
-                    <span>Next</span>
-
-                    {team.nextGame ? (
-                      <p>
-                        {team.nextGame.homeAway} vs {team.nextGame.opponent}
-                        {' · '}
-                        {team.nextGame.date}
-                        {' · '}
-                        {team.nextGame.time}
-                      </p>
-                    ) : (
-                      <p>Off-season or no upcoming game listed.</p>
-                    )}
-                  </div>
-                </>
+                  {team.lastGame ? (
+                    <p>
+                      <strong
+                        class={`result result--${team.lastGame.result.toLowerCase()}`}
+                      >
+                        {team.lastGame.result}
+                      </strong>
+                      {' '}
+                      vs {team.lastGame.opponent} · {team.lastGame.score}
+                    </p>
+                  ) : (
+                    <p>No recent completed game.</p>
+                  )}
+                </div>
               )}
           </section>
         ))}
