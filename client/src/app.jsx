@@ -336,8 +336,7 @@ async function handleToggleGroceryItem(itemId) {
     <main class="dashboard-page">
       <header class="dashboard-topbar">
         <div>
-          <p class="dashboard-eyebrow">Goselaz home</p>
-          <h1>Dashboard</h1>
+          <h1>Goselaz Dashboard</h1>
         </div>
 
         <div class="dashboard-topbar__right">

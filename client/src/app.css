@@ -10,7 +10,7 @@
   align-items: end;
   justify-content: space-between;
   gap: var(--space-6);
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-4);
 }
 
 .dashboard-eyebrow,
@@ -24,7 +24,7 @@
 }
 
 .dashboard-topbar h1 {
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   letter-spacing: -0.04em;
 }
 
