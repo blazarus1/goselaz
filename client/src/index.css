@@ -64,7 +64,7 @@ html {
   font-family: var(--font-body);
   background: var(--color-bg);
   text-size-adjust: 100%;
-  font-size: clamp(18px, 1vw + 14px, 24px);
+  font-size: clamp(16px, 0.7vw + 13px, 20px);
 }
 
 body {
