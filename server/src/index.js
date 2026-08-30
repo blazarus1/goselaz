@@ -36,6 +36,17 @@ app.use(googleAuthRouter);
 app.use('/api', calendarRouter);
 app.use('/api/admin', adminRouter);
 
+const clientDistPath = path.resolve(__dirname, '../../client/dist');
+
+app.use(express.static(clientDistPath));
+
+app.get('/*splat', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/auth')) {
+    return next();
+  }
+
+  res.sendFile(path.join(clientDistPath, 'index.html'));
+});
 
 app.use((req, res) => {
   res.status(404).json({
