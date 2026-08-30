@@ -272,7 +272,7 @@ function buildWeekDays(startDate) {
 
     return {
       date: getLocalDateKey(date),
-      label: date.toLocaleDateString([], {
+      label: date.toLocaleDateString('en-US', {
         weekday: 'short',
         month: 'numeric',
         day: 'numeric'

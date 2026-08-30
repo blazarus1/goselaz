@@ -40,7 +40,7 @@ router.get('/countdowns', (req, res) => {
 
       return {
         ...countdown,
-        date: targetDate.toLocaleDateString([], {
+        date: targetDate.toLocaleDateString('en-US', {
           month: 'long',
           day: 'numeric'
         }),

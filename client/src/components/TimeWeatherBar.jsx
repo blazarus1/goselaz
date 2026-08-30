@@ -38,14 +38,15 @@ function TimeWeatherBar({ weatherStatus = 'ready', weatherData, weatherError }) 
     <section class="status-bar" aria-label="Current time and weather">
       <div class="status-bar__time">
         <time class="status-bar__clock" dateTime={now.toISOString()}>
-          {now.toLocaleTimeString([], {
+          {now.toLocaleTimeString('en-US', {
             hour: 'numeric',
-            minute: '2-digit'
+            minute: '2-digit',
+            hour12: true
           })}
         </time>
 
         <p class="status-bar__date">
-          {now.toLocaleDateString([], {
+          {now.toLocaleDateString('en-US', {
             weekday: 'long',
             month: 'long',
             day: 'numeric'

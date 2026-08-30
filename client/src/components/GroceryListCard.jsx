@@ -5,9 +5,10 @@ function formatUpdatedAt(updatedAt) {
     return null;
   }
 
-  return new Date(updatedAt).toLocaleTimeString([], {
+  return new Date(updatedAt).toLocaleTimeString('en-US', {
     hour: 'numeric',
-    minute: '2-digit'
+    minute: '2-digit',
+    hour12: true
   });
 }
 

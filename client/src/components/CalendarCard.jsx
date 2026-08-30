@@ -1,9 +1,10 @@
 import DashboardCard from './DashboardCard';
 
 function getTimeParts(dateString) {
-  const parts = new Intl.DateTimeFormat([], {
+  const parts = new Intl.DateTimeFormat('en-US', {
     hour: 'numeric',
-    minute: '2-digit'
+    minute: '2-digit',
+    hour12: true
   }).formatToParts(new Date(dateString));
 
   const dayPeriod = parts.find((part) => part.type === 'dayPeriod')?.value || '';
@@ -40,9 +41,10 @@ function formatUpdatedAt(updatedAt) {
     return null;
   }
 
-  return new Date(updatedAt).toLocaleTimeString([], {
+  return new Date(updatedAt).toLocaleTimeString('en-US', {
     hour: 'numeric',
-    minute: '2-digit'
+    minute: '2-digit',
+    hour12: true
   });
 }
 
