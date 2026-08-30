@@ -28,13 +28,7 @@ if [ ! -f "$CLIENT_DIST/index.html" ]; then
   exit 1
 fi
 
-if [ -f "$REPO_ROOT/.env" ]; then
-  set -a
-  # shellcheck disable=SC1091
-  source "$REPO_ROOT/.env"
-  set +a
-fi
-
+PORT="$(grep -E '^PORT=' "$REPO_ROOT/.env" 2>/dev/null | tail -n1 | cut -d '=' -f2-)"
 DASHBOARD_URL="http://localhost:${PORT:-3000}"
 
 echo "Installing systemd service for the dashboard server (user: $RUN_USER, node: $NODE_BIN)..."

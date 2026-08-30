@@ -17,13 +17,7 @@ echo "Installing client dependencies and rebuilding..."
 echo "Restarting dashboard service..."
 sudo systemctl restart goselaz-dashboard.service
 
-if [ -f "$REPO_ROOT/.env" ]; then
-  set -a
-  # shellcheck disable=SC1091
-  source "$REPO_ROOT/.env"
-  set +a
-fi
-
+PORT="$(grep -E '^PORT=' "$REPO_ROOT/.env" 2>/dev/null | tail -n1 | cut -d '=' -f2-)"
 DASHBOARD_URL="http://localhost:${PORT:-3000}"
 
 echo "Waiting for the server to come back up..."
