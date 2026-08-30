@@ -34,8 +34,10 @@
   --color-error: #a33d52;
   --color-warning: #a15d20;
   --shadow-card: 0 12px 28px rgb(30 33 36 / 10%);
-  --card-tint: #d4d994;
-  --card-tint-text: #5e6623;
+  --card-tint: #5e6623;
+  --card-tint-text: #d4d994;
+  --card-tint-heading: #ffffff;
+  --card-accent: #e7cfd3;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -52,8 +54,10 @@
     --color-error: #f0a1b1;
     --color-warning: #f5bd82;
     --shadow-card: 0 12px 28px rgb(0 0 0 / 25%);
-    --card-tint: #5e6623;
-    --card-tint-text: #d4d994;
+    --card-tint: #d4d994;
+    --card-tint-text: #5e6623;
+    --card-tint-heading: #24272b;
+    --card-accent: #812c3a;
   }
 }
 
