@@ -68,7 +68,7 @@
 }
 
 .dashboard-card {
-  --color-muted: #ffffff;
+  --color-muted: var(--card-tint-text);
 
   display: flex;
   min-height: 15rem;
@@ -105,7 +105,7 @@
 }
 
 .outlook-bar {
-  --color-muted: #ffffff;
+  --color-muted: var(--card-tint-text);
 
   display: flex;
   gap: var(--space-3);
@@ -183,7 +183,7 @@
   padding: var(--space-5) var(--space-6);
   color: #fff;
   border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, #3f6a93, #1f3a54);
+  background: linear-gradient(135deg, #b1394c, #531d25);
   box-shadow: var(--shadow-card);
 }
 
@@ -197,7 +197,7 @@
 
 .status-bar__date {
   margin-top: var(--space-1);
-  color: #eef6fc;
+  color: #eee7e8;
   font-size: var(--text-sm);
   font-weight: 700;
 }
@@ -209,7 +209,7 @@
 }
 
 .status-bar__message {
-  color: #eef6fc;
+  color: #eee7e8;
 }
 
 .status-bar__symbol {
@@ -217,7 +217,7 @@
 }
 
 .status-bar__condition {
-  color: #eef6fc;
+  color: #eee7e8;
   font-size: var(--text-sm);
 }
 
@@ -238,7 +238,7 @@
 
 .status-bar__temperature span {
   margin-top: var(--space-1);
-  color: #eef6fc;
+  color: #eee7e8;
   font-size: var(--text-xs);
   white-space: nowrap;
 }
