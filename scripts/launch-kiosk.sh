@@ -27,5 +27,6 @@ exec "$CHROMIUM_BIN" \
   --disable-infobars \
   --disable-session-crashed-bubble \
   --check-for-update-interval=31536000 \
+  --force-color-scheme=dark \
   --incognito \
   "$DASHBOARD_URL"
