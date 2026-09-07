@@ -2,6 +2,8 @@ const { getDb } = require('../db/db');
 
 const OPENWEATHER_BASE_URL =
   'https://api.openweathermap.org/data/2.5/weather';
+const OPENWEATHER_FORECAST_URL =
+  'https://api.openweathermap.org/data/2.5/forecast';
 
 function getCacheMinutes() {
   const configuredMinutes = Number(process.env.WEATHER_CACHE_MINUTES || 15);
@@ -66,9 +68,60 @@ function isCacheFresh(cachedResponse) {
   return new Date(cachedResponse.expiresAt) > new Date();
 }
 
-function normalizeWeatherResponse(location, responseData) {
+function getLocalDateKey(date, timezone) {
+  try {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: timezone.trim() })
+      .format(date);
+  } catch (error) {
+    return new Intl.DateTimeFormat('en-CA').format(date);
+  }
+}
+
+// OpenWeather's current-weather endpoint reports temp_min/temp_max as the
+// spread *currently observed* across nearby stations, not the day's actual
+// forecast high/low — it drifts with every poll. Derive a stable high/low
+// from today's slice of the 3-hourly forecast instead. The current reading
+// is folded in too, since forecast data only covers hours still to come —
+// late in the day it would otherwise miss a peak that already happened.
+function getTodayHighLow(location, forecastData, currentTemp) {
+  const entries = forecastData?.list || [];
+  const todayKey = getLocalDateKey(new Date(), location.timezone);
+
+  const todayEntries = entries.filter((entry) => {
+    if (!entry.dt) {
+      return false;
+    }
+
+    return getLocalDateKey(new Date(entry.dt * 1000), location.timezone)
+      === todayKey;
+  });
+
+  if (todayEntries.length === 0) {
+    return null;
+  }
+
+  const highs = todayEntries.map((entry) => entry.main.temp_max);
+  const lows = todayEntries.map((entry) => entry.main.temp_min);
+
+  if (Number.isFinite(currentTemp)) {
+    highs.push(currentTemp);
+    lows.push(currentTemp);
+  }
+
+  return {
+    high: Math.round(Math.max(...highs)),
+    low: Math.round(Math.min(...lows))
+  };
+}
+
+function normalizeWeatherResponse(location, responseData, forecastData) {
   const weather = responseData.weather?.[0] || {};
   const units = getWeatherUnits();
+  const todayHighLow = getTodayHighLow(
+    location,
+    forecastData,
+    responseData.main.temp
+  );
 
   return {
     id: location.id,
@@ -78,8 +131,8 @@ function normalizeWeatherResponse(location, responseData) {
     timezone: location.timezone,
     temperature: Math.round(responseData.main.temp),
     feelsLike: Math.round(responseData.main.feels_like),
-    high: Math.round(responseData.main.temp_max),
-    low: Math.round(responseData.main.temp_min),
+    high: todayHighLow ? todayHighLow.high : Math.round(responseData.main.temp_max),
+    low: todayHighLow ? todayHighLow.low : Math.round(responseData.main.temp_min),
     humidity: responseData.main.humidity,
     windSpeed: Math.round(responseData.wind?.speed || 0),
     condition: weather.description || 'Unknown conditions',
@@ -91,14 +144,8 @@ function normalizeWeatherResponse(location, responseData) {
   };
 }
 
-async function fetchLiveWeather(location) {
-  const apiKey = process.env.OPENWEATHER_API_KEY;
-
-  if (!apiKey) {
-    throw new Error('OPENWEATHER_API_KEY is missing from .env');
-  }
-
-  const url = new URL(OPENWEATHER_BASE_URL);
+async function fetchOpenWeather(baseUrl, location, apiKey) {
+  const url = new URL(baseUrl);
 
   url.searchParams.set('lat', location.latitude);
   url.searchParams.set('lon', location.longitude);
@@ -115,9 +162,31 @@ async function fetchLiveWeather(location) {
     );
   }
 
-  const responseData = await response.json();
+  return response.json();
+}
 
-  return normalizeWeatherResponse(location, responseData);
+async function fetchLiveWeather(location) {
+  const apiKey = process.env.OPENWEATHER_API_KEY;
+
+  if (!apiKey) {
+    throw new Error('OPENWEATHER_API_KEY is missing from .env');
+  }
+
+  const [responseData, forecastData] = await Promise.all([
+    fetchOpenWeather(OPENWEATHER_BASE_URL, location, apiKey),
+    fetchOpenWeather(OPENWEATHER_FORECAST_URL, location, apiKey).catch(
+      (error) => {
+        console.error(
+          `Weather forecast fetch failed for ${location.name}:`,
+          error.message
+        );
+
+        return null;
+      }
+    )
+  ]);
+
+  return normalizeWeatherResponse(location, responseData, forecastData);
 }
 
 async function getWeatherForLocation(location, forceRefresh = false) {
