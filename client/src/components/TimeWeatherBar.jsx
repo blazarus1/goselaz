@@ -54,6 +54,8 @@ function TimeWeatherBar({ weatherStatus = 'ready', weatherData, weatherError }) 
         </p>
       </div>
 
+      <p class="status-bar__welcome">Welcome to KnoxVegas, Jackie!</p>
+
       <div class="status-bar__weather">
         {weatherStatus === 'loading' && (
           <p class="status-bar__message">Loading weather…</p>
