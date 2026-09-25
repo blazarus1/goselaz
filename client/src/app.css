@@ -205,9 +205,12 @@
 }
 
 .status-bar__welcome {
+  max-width: 20ch;
   color: #fff;
-  font-size: var(--text-sm);
-  font-weight: 700;
+  font-size: var(--text-xl);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.1;
 }
 
 .status-bar__weather {
