@@ -204,16 +204,6 @@
   font-weight: 700;
 }
 
-.status-bar__welcome {
-  max-width: 20ch;
-  color: #fff;
-  font-size: var(--text-xl);
-  font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
-  text-align: center;
-}
-
 .status-bar__weather {
   display: flex;
   align-items: center;
