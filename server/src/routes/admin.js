@@ -259,7 +259,7 @@ function normalizePayload(resourceName, payload) {
         sport: getRequiredText(payload.sport, 'sport', fields, 80),
         league: getOptionalText(payload.league, 80),
         data_source: getRequiredText(
-          payload.dataSource || 'thesportsdb',
+          payload.dataSource || 'espn',
           'dataSource',
           fields,
           80

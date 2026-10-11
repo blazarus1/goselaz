@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS favorite_teams (
   team_name TEXT NOT NULL UNIQUE,
   sport TEXT NOT NULL,
   league TEXT,
-  data_source TEXT NOT NULL DEFAULT 'thesportsdb',
+  data_source TEXT NOT NULL DEFAULT 'espn',
   external_team_id TEXT,
   is_active INTEGER NOT NULL DEFAULT 1
     CHECK (is_active IN (0, 1)),

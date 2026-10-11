@@ -1,5 +1,23 @@
 const { getDb } = require('../db/db');
 
+const ESPN_API_BASE_URL = 'https://site.api.espn.com/apis/site/v2/sports';
+
+// Maps a team's league (and sport, where the league is ambiguous) to the
+// ESPN path segment used in its API URLs.
+const ESPN_LEAGUE_PATHS = {
+  NFL: 'football/nfl',
+  NBA: 'basketball/nba',
+  WNBA: 'basketball/wnba',
+  MLB: 'baseball/mlb',
+  NHL: 'hockey/nhl',
+  MLS: 'soccer/usa.1',
+  NWSL: 'soccer/usa.nwsl',
+  'NCAA:FOOTBALL': 'football/college-football',
+  'NCAA:BASKETBALL': 'basketball/mens-college-basketball',
+  NCAAW: 'basketball/womens-college-basketball',
+  'NCAAW:BASKETBALL': 'basketball/womens-college-basketball'
+};
+
 function getSportsCacheMinutes() {
   const configuredMinutes = Number(process.env.SPORTS_CACHE_MINUTES || 15);
 
@@ -8,16 +26,17 @@ function getSportsCacheMinutes() {
     : 15;
 }
 
-function getApiKey() {
-  return process.env.THESPORTSDB_API_KEY || '123';
+function getEspnLeaguePath(team) {
+  const league = (team.league || '').trim().toUpperCase();
+  const sport = (team.sport || '').trim().toUpperCase();
+
+  return ESPN_LEAGUE_PATHS[`${league}:${sport}`]
+    || ESPN_LEAGUE_PATHS[league]
+    || null;
 }
 
-function getApiBaseUrl() {
-  return `https://www.thesportsdb.com/api/v1/json/${getApiKey()}`;
-}
-
-function buildCacheKey(teamId) {
-  return `sports:team:${teamId}`;
+function buildCacheKey(leaguePath, teamId) {
+  return `sports:espn:${leaguePath}:${teamId}`;
 }
 
 function getCachedResponse(cacheKey) {
@@ -44,7 +63,7 @@ function saveCachedResponse(cacheKey, payload, expiresAt) {
       fetched_at,
       expires_at
     )
-    VALUES (?, ?, 'thesportsdb', ?, ?)
+    VALUES (?, ?, 'espn', ?, ?)
 
     ON CONFLICT(cache_key) DO UPDATE SET
       payload_json = excluded.payload_json,
@@ -68,87 +87,167 @@ function isCacheFresh(cachedResponse) {
 }
 
 async function fetchApi(endpoint) {
-  const url = `${getApiBaseUrl()}/${endpoint}`;
+  const url = `${ESPN_API_BASE_URL}/${endpoint}`;
   const response = await fetch(url);
 
   if (!response.ok) {
     const responseText = await response.text();
 
     throw new Error(
-      `TheSportsDB request failed: ${response.status} ${responseText}`
+      `ESPN request failed: ${response.status} ${responseText}`
     );
   }
 
   return response.json();
 }
 
-function isHomeTeam(event, team) {
-  return String(event.idHomeTeam) === String(team.externalTeamId)
-    || event.strHomeTeam?.toLowerCase() === team.teamName.toLowerCase();
+// ESPN's default team schedule omits some postseason games (e.g. college
+// bowl games), so the postseason schedule is requested too and merged in.
+async function fetchTeamEvents(leaguePath, teamId) {
+  const scheduleUrl = `${leaguePath}/teams/${encodeURIComponent(teamId)}/schedule`;
+
+  const [defaultSchedule, postseasonSchedule] = await Promise.all([
+    fetchApi(scheduleUrl),
+    fetchApi(`${scheduleUrl}?seasontype=3`)
+  ]);
+
+  const eventsById = new Map();
+
+  [
+    ...(defaultSchedule.events || []),
+    ...(postseasonSchedule.events || [])
+  ].forEach((event) => {
+    eventsById.set(event.id, event);
+  });
+
+  return [...eventsById.values()];
+}
+
+function formatLocalDate(dateValue) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: process.env.TZ || undefined,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).format(dateValue);
+}
+
+function formatLocalTime(dateValue) {
+  return new Intl.DateTimeFormat('en-US', {
+    timeZone: process.env.TZ || undefined,
+    hour: 'numeric',
+    minute: '2-digit'
+  }).format(dateValue);
+}
+
+function getScore(competitor) {
+  const score = competitor?.score;
+
+  if (score === null || score === undefined) {
+    return null;
+  }
+
+  const value = Number(typeof score === 'object' ? score.value : score);
+
+  return Number.isFinite(value) ? value : null;
+}
+
+function getTeamCompetitors(event, team) {
+  const competition = event.competitions?.[0];
+  const competitors = competition?.competitors || [];
+
+  const teamCompetitor = competitors.find(
+    (competitor) =>
+      String(competitor.team?.id) === String(team.externalTeamId)
+  );
+
+  const opponentCompetitor = competitors.find(
+    (competitor) => competitor !== teamCompetitor
+  );
+
+  return {
+    competition,
+    teamCompetitor,
+    opponentCompetitor
+  };
 }
 
 function normalizeCompletedGame(event, team) {
-  const teamIsHome = isHomeTeam(event, team);
+  const {
+    competition,
+    teamCompetitor,
+    opponentCompetitor
+  } = getTeamCompetitors(event, team);
 
-  const teamScore = Number(
-    teamIsHome ? event.intHomeScore : event.intAwayScore
-  );
-
-  const opponentScore = Number(
-    teamIsHome ? event.intAwayScore : event.intHomeScore
-  );
+  const teamScore = getScore(teamCompetitor);
+  const opponentScore = getScore(opponentCompetitor);
+  const eventDate = new Date(event.date);
 
   let result = 'T';
 
-  if (teamScore > opponentScore) {
+  if (teamCompetitor?.winner === true || teamScore > opponentScore) {
     result = 'W';
-  } else if (teamScore < opponentScore) {
+  } else if (
+    opponentCompetitor?.winner === true
+    || teamScore < opponentScore
+  ) {
     result = 'L';
   }
 
   return {
-    eventId: event.idEvent,
-    date: event.dateEvent,
-    time: event.strTime || null,
-    opponent: teamIsHome ? event.strAwayTeam : event.strHomeTeam,
-    homeAway: teamIsHome ? 'Home' : 'Away',
+    eventId: event.id,
+    date: formatLocalDate(eventDate),
+    time: competition?.timeValid === false
+      ? null
+      : formatLocalTime(eventDate),
+    opponent: opponentCompetitor?.team?.displayName || 'TBD',
+    homeAway: teamCompetitor?.homeAway === 'home' ? 'Home' : 'Away',
     teamScore,
     opponentScore,
     score: `${teamScore}–${opponentScore}`,
     result,
-    venue: event.strVenue || null
+    venue: competition?.venue?.fullName || null
   };
 }
 
 function normalizeUpcomingGame(event, team) {
-  const teamIsHome = isHomeTeam(event, team);
+  const {
+    competition,
+    teamCompetitor,
+    opponentCompetitor
+  } = getTeamCompetitors(event, team);
+
+  const eventDate = new Date(event.date);
 
   return {
-    eventId: event.idEvent,
-    date: event.dateEvent,
-    time: event.strTime || 'Time TBD',
-    opponent: teamIsHome ? event.strAwayTeam : event.strHomeTeam,
-    homeAway: teamIsHome ? 'Home' : 'Away',
-    venue: event.strVenue || null
+    eventId: event.id,
+    date: formatLocalDate(eventDate),
+    time: competition?.timeValid === false
+      ? 'Time TBD'
+      : formatLocalTime(eventDate),
+    opponent: opponentCompetitor?.team?.displayName || 'TBD',
+    homeAway: teamCompetitor?.homeAway === 'home' ? 'Home' : 'Away',
+    venue: competition?.venue?.fullName || null
   };
 }
 
-function findMostRecentCompletedGame(events, team) {
-  if (!Array.isArray(events)) {
-    return null;
-  }
+function getEventState(event) {
+  return event.competitions?.[0]?.status?.type?.state;
+}
 
+function findMostRecentCompletedGame(events, team) {
   const completedGames = events
-    .filter(
-      (event) =>
-        event.intHomeScore !== null
-        && event.intHomeScore !== undefined
-        && event.intAwayScore !== null
-        && event.intAwayScore !== undefined
-    )
-    .sort((a, b) => {
-      return new Date(b.dateEvent) - new Date(a.dateEvent);
-    });
+    .filter((event) => {
+      const { teamCompetitor, opponentCompetitor } = getTeamCompetitors(
+        event,
+        team
+      );
+
+      return getEventState(event) === 'post'
+        && getScore(teamCompetitor) !== null
+        && getScore(opponentCompetitor) !== null;
+    })
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
 
   if (completedGames.length === 0) {
     return null;
@@ -158,17 +257,9 @@ function findMostRecentCompletedGame(events, team) {
 }
 
 function findNextUpcomingGame(events, team) {
-  if (!Array.isArray(events)) {
-    return null;
-  }
-
-  const today = new Date().toISOString().slice(0, 10);
-
   const upcomingGames = events
-    .filter((event) => event.dateEvent >= today)
-    .sort((a, b) => {
-      return new Date(a.dateEvent) - new Date(b.dateEvent);
-    });
+    .filter((event) => getEventState(event) === 'pre')
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   if (upcomingGames.length === 0) {
     return null;
@@ -191,7 +282,22 @@ async function fetchSportsForTeam(team) {
     };
   }
 
-  const cacheKey = buildCacheKey(team.externalTeamId);
+  const leaguePath = getEspnLeaguePath(team);
+
+  if (!leaguePath) {
+    return {
+      id: team.id,
+      team: team.teamName,
+      sport: team.sport,
+      league: team.league,
+      source: 'not-configured',
+      message: `League "${team.league || ''}" is not supported for ${team.sport}.`,
+      lastGame: null,
+      nextGame: null
+    };
+  }
+
+  const cacheKey = buildCacheKey(leaguePath, team.externalTeamId);
   const cachedResponse = getCachedResponse(cacheKey);
 
   if (cachedResponse && isCacheFresh(cachedResponse)) {
@@ -204,18 +310,15 @@ async function fetchSportsForTeam(team) {
   }
 
   try {
-    const [lastResponse, nextResponse] = await Promise.all([
-      fetchApi(`eventslast.php?id=${team.externalTeamId}`),
-      fetchApi(`eventsnext.php?id=${team.externalTeamId}`)
-    ]);
+    const events = await fetchTeamEvents(leaguePath, team.externalTeamId);
 
     const sportsData = {
       id: team.id,
       team: team.teamName,
       sport: team.sport,
       league: team.league,
-      lastGame: findMostRecentCompletedGame(lastResponse.results, team),
-      nextGame: findNextUpcomingGame(nextResponse.events, team)
+      lastGame: findMostRecentCompletedGame(events, team),
+      nextGame: findNextUpcomingGame(events, team)
     };
 
     const fetchedAt = new Date().toISOString();

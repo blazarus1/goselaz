@@ -62,7 +62,7 @@ function initializeDatabase() {
       'Tennessee Volunteers',
       'Football',
       'NCAA',
-      'thesportsdb',
+      'espn',
       null,
       1
     );

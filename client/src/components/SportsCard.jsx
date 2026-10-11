@@ -12,6 +12,18 @@ function formatUpdatedAt(updatedAt) {
   });
 }
 
+function formatGameDate(date) {
+  if (!date) {
+    return null;
+  }
+
+  return new Date(`${date}T00:00:00`).toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric'
+  });
+}
+
 function SportsCard({ data, status = 'ready', error }) {
   const teams = data?.teams || [];
   const updatedTime = formatUpdatedAt(data?.updatedAt);
@@ -52,22 +64,41 @@ function SportsCard({ data, status = 'ready', error }) {
             {team.source !== 'not-configured'
               && team.source !== 'unavailable'
               && (
-                <div class="sports-detail">
-                  <span>Last</span>
+                <div class="sports-games">
+                  <div class="sports-detail">
+                    <span>Last</span>
 
-                  {team.lastGame ? (
-                    <p>
-                      <strong
-                        class={`result result--${team.lastGame.result.toLowerCase()}`}
-                      >
-                        {team.lastGame.result}
-                      </strong>
-                      {' '}
-                      vs {team.lastGame.opponent} · {team.lastGame.score}
-                    </p>
-                  ) : (
-                    <p>No recent completed game.</p>
-                  )}
+                    {team.lastGame ? (
+                      <p>
+                        <strong
+                          class={`result result--${team.lastGame.result.toLowerCase()}`}
+                        >
+                          {team.lastGame.result}
+                        </strong>
+                        {' '}
+                        vs {team.lastGame.opponent} · {team.lastGame.score}
+                      </p>
+                    ) : (
+                      <p>No recent completed game.</p>
+                    )}
+                  </div>
+
+                  <div class="sports-detail">
+                    <span>Next</span>
+
+                    {team.nextGame ? (
+                      <p>
+                        {team.nextGame.homeAway === 'Home' ? 'vs' : 'at'}
+                        {' '}
+                        {team.nextGame.opponent}
+                        {' · '}
+                        {formatGameDate(team.nextGame.date)}
+                        {team.nextGame.time ? `, ${team.nextGame.time}` : ''}
+                      </p>
+                    ) : (
+                      <p>No upcoming game scheduled.</p>
+                    )}
+                  </div>
                 </div>
               )}
           </section>

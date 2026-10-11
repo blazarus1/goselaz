@@ -45,7 +45,7 @@ const resourceDefinitions = [
       { name: 'teamName', label: 'Team name', type: 'text', required: true },
       { name: 'sport', label: 'Sport', type: 'text', required: true },
       { name: 'league', label: 'League', type: 'text' },
-      { name: 'dataSource', label: 'Provider', type: 'text', required: true, defaultValue: 'thesportsdb' },
+      { name: 'dataSource', label: 'Provider', type: 'text', required: true, defaultValue: 'espn' },
       { name: 'externalTeamId', label: 'Provider team ID', type: 'text' },
       { name: 'sortOrder', label: 'Display order', type: 'number', min: 0, max: 999, defaultValue: 0 },
       { name: 'isActive', label: 'Active', type: 'checkbox', defaultValue: true }
