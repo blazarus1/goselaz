@@ -13,6 +13,9 @@ const ESPN_LEAGUE_PATHS = {
   MLS: 'soccer/usa.1',
   NWSL: 'soccer/usa.nwsl',
   'NCAA:FOOTBALL': 'football/college-football',
+  'NCAA:COLLEGE FOOTBALL': 'football/college-football',
+  NCAAF: 'football/college-football',
+  CFB: 'football/college-football',
   'NCAA:BASKETBALL': 'basketball/mens-college-basketball',
   NCAAW: 'basketball/womens-college-basketball',
   'NCAAW:BASKETBALL': 'basketball/womens-college-basketball'
@@ -291,7 +294,7 @@ async function fetchSportsForTeam(team) {
       sport: team.sport,
       league: team.league,
       source: 'not-configured',
-      message: `League "${team.league || ''}" is not supported for ${team.sport}.`,
+      message: `League "${team.league || ''}" with sport "${team.sport}" is not recognized. Use a league like NCAA, NFL, NBA, WNBA, MLB or NHL.`,
       lastGame: null,
       nextGame: null
     };

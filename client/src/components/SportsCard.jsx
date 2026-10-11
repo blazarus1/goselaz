@@ -51,7 +51,8 @@ function SportsCard({ data, status = 'ready', error }) {
 
             {team.source === 'not-configured' && (
               <p class="sports-message">
-                Add this team’s external provider ID to enable scores.
+                {team.message
+                  || 'Add this team’s external provider ID to enable scores.'}
               </p>
             )}
 
