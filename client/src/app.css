@@ -304,9 +304,22 @@
   font-size: var(--text-sm);
 }
 
+.sports-list {
+  gap: var(--space-2);
+}
+
 .sports-team {
-  padding-bottom: var(--space-4);
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: var(--space-4);
+  padding-bottom: var(--space-2);
   border-bottom: 1px solid var(--color-border);
+}
+
+.sports-team .sports-detail,
+.sports-team .sports-message {
+  margin-top: 0;
 }
 
 .sports-team:last-child {
@@ -322,7 +335,7 @@
 
 .sports-detail {
   display: grid;
-  grid-template-columns: 3.75rem 1fr;
+  grid-template-columns: 2.75rem 1fr;
   gap: var(--space-2);
   margin-top: var(--space-2);
 }
@@ -545,6 +558,15 @@
 }
 
 @media (max-width: 700px) {
+  .sports-team {
+    grid-template-columns: 1fr;
+  }
+
+  .sports-team .sports-detail,
+  .sports-team .sports-message {
+    margin-top: var(--space-2);
+  }
+
   .sports-games {
     grid-template-columns: 1fr;
     gap: 0;
