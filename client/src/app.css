@@ -210,6 +210,50 @@
   font-size: var(--text-lg);
   font-weight: 800;
   letter-spacing: -0.02em;
+  color: transparent;
+  background: linear-gradient(
+    110deg,
+    #fff 40%,
+    #ffd98a 47%,
+    #fff6dc 50%,
+    #ffd98a 53%,
+    #fff 60%
+  );
+  background-size: 300% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: welcome-shimmer 5s ease-in-out infinite;
+}
+
+/* A gold glint sweeps across the text, then rests until the next 5s cycle. */
+@keyframes welcome-shimmer {
+  0% {
+    background-position: 100% 0;
+    transform: scale(1);
+  }
+
+  12% {
+    transform: scale(1.06);
+  }
+
+  30% {
+    background-position: 0% 0;
+    transform: scale(1);
+  }
+
+  100% {
+    background-position: 0% 0;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status-bar__welcome {
+    animation: none;
+    color: #fff;
+    background: none;
+  }
 }
 
 .status-bar__weather {
