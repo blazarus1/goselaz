@@ -204,6 +204,14 @@
   font-weight: 700;
 }
 
+.status-bar__welcome {
+  flex: 1;
+  text-align: center;
+  font-size: var(--text-lg);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
 .status-bar__weather {
   display: flex;
   align-items: center;

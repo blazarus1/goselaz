@@ -12,6 +12,10 @@ function getWeatherSymbol(iconCode = '') {
   return '○';
 }
 
+// Temporary banner message shown between the clock and the weather.
+// Set to '' (or remove) to hide it.
+const WELCOME_MESSAGE = 'Welcome home, Goose!';
+
 function findPrimaryLocation(locations) {
   return (
     locations.find((location) =>
@@ -53,6 +57,10 @@ function TimeWeatherBar({ weatherStatus = 'ready', weatherData, weatherError }) 
           })}
         </p>
       </div>
+
+      {WELCOME_MESSAGE && (
+        <p class="status-bar__welcome">{WELCOME_MESSAGE}</p>
+      )}
 
       <div class="status-bar__weather">
         {weatherStatus === 'loading' && (
